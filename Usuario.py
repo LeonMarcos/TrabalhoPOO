@@ -60,34 +60,34 @@ class Usuario:
         #Tratamento de exceção para o nome
         while True:
             try:
-                self._nome = str(input("Digite seu nome: "))
+                self._nome = str(input("\nNome: "))
                 break
             except:
-                print("Nome inválido. Por favor digite novamente")
+                print("Nome inválido. Por favor digite novamente.")
                 
         #Tratamento de exceção para o endereco
         while True:
             try:
-                self._endereco = str(input("Digite seu endereco: "))
+                self._endereco = str(input("Endereço: "))
                 break
             except:
-                print("Endereço inválido. Por favor digite novamente")
+                print("Endereço inválido. Por favor digite novamente.")
                 
         #Tratamento de exceção para o telefone
         while True:
             try:
-                self._telefone = int(input("Digite seu telefone: "))
+                self._telefone = int(input("Telefone: "))
                 break
             except:
-                print("Número de telefone inválido. Por favor digite novamente")
+                print("Número de telefone inválido. Por favor digite novamente.")
         
         #Tratamento de exceção para o email
         while True:
             try:
-                self._email = str(input("Digite seu email: "))
+                self._email = str(input("E-mail: "))
                 break
             except:
-                print("E-mail inválido. Por favor digite novamente")
+                print("E-mail inválido. Por favor digite novamente.")
         
         #Tratamento de exceção para o cpf_cnpj
         while True:
@@ -95,7 +95,7 @@ class Usuario:
                 self._cpf_cnpj = int(input("Digite seu cpf_cnpj: "))
                 break
             except:
-                print("Número de cpf_cnpj inválido. Por favor digite novamente")
+                print("Número de cpf_cnpj inválido. Por favor digite novamente.")
         
         #Tratamento de exceção para o senha
         while True:
@@ -103,11 +103,11 @@ class Usuario:
                 self._senha = str(input("Digite seu senha: "))
                 break
             except:
-                print("Senha inválida. Por favor digite novamente")
+                print("Senha inválida. Por favor digite novamente.")
         
         
 
-"""def main():
+if __name__ == "__main__":
     usuarioum = Usuario()
     usuarioum.cria_Usuario()
     print("\n")
@@ -118,4 +118,3 @@ class Usuario:
     print(usuarioum.get_cpf_cnpj())
     print(usuarioum.get_senha())
     
-main()"""

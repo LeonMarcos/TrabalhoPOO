@@ -23,17 +23,16 @@ if __name__ == "__main__":
     
     print("Seja bem vinde ao UFMGFood, o melhor aplicativo de delivery da UFMG!")
     print("\nDigite 1 para realizar login caso já possua uma conta existente.")
-    print("Digite qualquer outra tecla para cadastrar um novo usuário caso não possua conta.")
+    print("\nDigite qualquer outra tecla para cadastrar um novo usuário caso não possua conta.")
     conta_existe = int(input(": "))
     
     if conta_existe == 1:
         
         while True:
-            if sistema.verifica_login_cliente(cliente) == True:
-                print("O login foi realizado com sucesso")
+            if sistema.login_cliente(cliente) == True:
                 break
-            else:
-                print("O login não foi realizado com sucesso. Por favor digite seus dados novamente.")
+            
+                
     
     else:
         print("Em construção")

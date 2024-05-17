@@ -22,7 +22,7 @@ class Cliente(Usuario):
             except:
                 print("Número do cartao inválido. Por favor digite novamente")
     
-'''def main():
+if __name__ == "__main__":
     
         clienteum = Cliente()
         clienteum.cria_Usuario()
@@ -34,4 +34,4 @@ class Cliente(Usuario):
         print(clienteum.get_cpf_cnpj())
         print(clienteum.get_senha())
         
-main()'''
+
