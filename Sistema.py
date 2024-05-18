@@ -5,7 +5,6 @@ Created on Wed May 15 15:35:05 2024
 @author: lmfel
 """
 
-from Usuario import Usuario
 from Cliente import Cliente
 from Estabelecimento import Estabelecimento
 from typing import Type
@@ -15,6 +14,7 @@ class Sistema:
     def __init__(self) -> None:
         self.__lista_de_clientes = []
         self.__lista_de_estabelecimentos = []
+        self.__numeros_estabelecimentos = []
         
     # método que verifica se o cliente existe na lista de cliente
     def __verifica_login_cliente(self, cliente: Type[Cliente]) -> bool:
@@ -95,8 +95,20 @@ class Sistema:
             print("\nO cadastro foi realizado com sucesso!")
         else:
             print("\nO estabelecimento já está cadastrado.")
-                    
-    
+            
+    # Método que exibe uma lista de estabelecimentos cadastrados e associa cada estabelecimento a um número inteiro diferente
+    def exibe_estabelecimentos(self) ->"Estabelecimento":
+        numero = 0
+        if not self.__lista_de_estabelecimentos:
+            print("\nNão existem estabelecimento cadastradas no aplicativo.")
+        else:
+            print("\nLista de estabelecimentos cadastrados em nosso aplicativo: ")
+            for estabelecimento in self.__lista_de_estabelecimentos:
+                numero = numero +1
+                print(numero,"-", f"Nome: {estabelecimento.get_nome(),}")
+                self.__numeros_estabelecimentos.append(numero)
+        
+            
 if __name__ == "__main__":
     
         sistemaum = Sistema()    
@@ -109,14 +121,12 @@ if __name__ == "__main__":
         print(estabelecimentoum.get_email())
         print(estabelecimentoum.get_cpf_cnpj())
         print(estabelecimentoum.get_senha())
-        sistemaum.cria_cadastro_estabelecimento(estabelecimentoum)
         
-        sistemaum.login_estabelecimento(estabelecimentoum)
+        sistemaum.cria_cadastro_estabelecimento(estabelecimentoum) 
         
         estabelecimentodois = Estabelecimento()
-        sistemaum.login_estabelecimento(estabelecimentodois)
         estabelecimentodois.cria_Usuario()
         sistemaum.cria_cadastro_estabelecimento(estabelecimentodois)
-        sistemaum.login_estabelecimento(estabelecimentodois)
         
+        sistemaum.exibe_estabelecimentos()
         

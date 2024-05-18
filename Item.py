@@ -2,11 +2,12 @@
 class Item:
        
     def __init__(self):
-        
+        # Atributos e construtor da classe Item
         self.nome = None
         self.descricao = None
         self.preco = None
         
+    #Método que cria um item.
     def cria_item(self) -> None:
         self.nome = input("\nPor favor informe o nome do item: ")
         self.descricao = input("Por favor informe a descrição do item: ")
