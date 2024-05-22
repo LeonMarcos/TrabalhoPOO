@@ -56,6 +56,9 @@ class Usuario:
     
     # método abstrato responsavel por criar o Usuario
     def cria_Usuario(self) -> None:
+
+        print('\033[H\033[2J')
+        print(f"\n---------  Cadastrar {self.__class__.__name__}  ---------\n")
         
         #Tratamento de exceção para o nome
         while True:
@@ -104,6 +107,7 @@ class Usuario:
                 break
             except:
                 print("Senha inválida. Por favor digite novamente.")
+        print('\033[H\033[2J')
         
         
 
