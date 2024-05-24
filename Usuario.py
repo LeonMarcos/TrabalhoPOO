@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Spyder Editor
 
-This is a temporary script file.
-"""
+
 from abc import ABC, abstractmethod
 import math
 import re
@@ -107,6 +103,8 @@ class Usuario:
                 break
             except:
                 print("Senha inválida. Por favor digite novamente.")
+
+        self.tipo = self.__class__.__name__
         print('\033[H\033[2J')
         
         

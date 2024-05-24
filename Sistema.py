@@ -1,104 +1,110 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 15 15:35:05 2024
 
-@author: lmfel
-"""
-#############################################################
-import pyodbc 
 
-dados_conexao = ( 
-    "Driver={SQL Server};" #nome padrão quando se utiliza o SQL
-    "Server=localhost\SQLEXPRESS;" #nome do seu servidor igual mostrado no SQL
-    "Database=UFMGFood;" #nome do projeto criado
-)
-conexao = pyodbc.connect(dados_conexao)
-#print ('Conexão bem sucedida')
+####################### BANCO DE DADOS ######################
 
-cursor = conexao.cursor() #utiliza-se o cursor para apontar para as variaveis dentro do sql
+from Conex_SQL import connection
+
+cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis dentro do sql
 
 #############################################################
 
+from Usuario import Usuario
 from Cliente import Cliente
 from Estabelecimento import Estabelecimento
 from typing import Type
 import time
 
+dados_usuario = None
+
 class Sistema:
     # Atributos e construtor da classe Sistema
     def __init__(self) -> None:
-        self.__lista_de_clientes = []
+        self.__lista_de_usuarios = []
         self.__lista_de_estabelecimentos = []
         self.__numeros_estabelecimentos = []
+
+    def salva_dados_usuario(self, usuario):  
+        self.dados_usuario = usuario
+         
+    
+    def retorna_dados_usuario(self):
+         return self.dados_usuario
+
+        
         
     # método que verifica se o cliente existe na lista de cliente
-    def __verifica_login_cliente(self, cliente: Type[Cliente]) -> bool:
-        cliente_login = cliente
+    def __verifica_login_usuario(self, usuario: Type[Usuario]) -> bool:
+        usuario_login = usuario
         consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
         cursor.execute(consulta) 
         tabela = cursor.fetchall()
-        self.__lista_de_clientes  = []
+        self.__lista_de_usuarios  = []
         for busca in tabela:
-            self.__lista_de_clientes.append(busca)
+            self.__lista_de_usuarios.append(busca)
         
-        if cliente_login.get_email() == None and cliente_login.get_senha() == None:
-           login_email = input("\nDigite seu e-mail: ")
-           login_senha = input("Digite sua senha: ")
-           for cliente_banco in self.__lista_de_clientes:
-               if cliente_banco.email == login_email and \
-                   cliente_banco.senha == login_senha:
-                       return True
+        if usuario_login.get_email() == None and usuario_login.get_senha() == None:
+           login_email = input("\n| Digite seu e-mail: ")
+           login_senha = input("| Digite sua senha: ")
+           
+           for usuario_banco in self.__lista_de_usuarios:
+               if usuario_banco.email == login_email and \
+                   usuario_banco.senha == login_senha:
+                        self.salva_dados_usuario(usuario_banco) #tem que retornar os dados do cliente tbm e não só se o login foi aprovado
+                        return True
                            
         else:         
-            for cliente_banco in self.__lista_de_clientes :
-                if cliente_banco.email == cliente_login._email:
-                    print('Email já cadastrado por outro usuário!')
+            for usuario_banco in self.__lista_de_usuarios :
+                if usuario_banco.email == usuario_login._email:
+                    print('| Email já cadastrado por outro usuário!')
                     time.sleep(3)
                     print('\033[H\033[2J') 
                     return True 
                 
-                if cliente_banco.cpf_cnpj == cliente_login._cpf_cnpj: #alterei para email OU cpf/cnpj iguais
-                    print('CPF já cadastrado por outro usuário!')
+                if usuario_banco.cpf_cnpj == usuario_login._cpf_cnpj: #alterei para email OU cpf/cnpj iguais
+                    print('| CPF já cadastrado por outro usuário!')
                     time.sleep(3)
                     print('\033[H\033[2J') 
                     return True
                      
         return False
-        
+     
     
     # método que retorna o cliente
-    def login_cliente(self, cliente: Type[Cliente]) -> bool:
+    def login_usuario(self) -> bool:
         
         print('\033[H\033[2J')
-        cliente_classe = Cliente()       
-        print(f"-------------- Login {type(cliente_classe).__name__}  --------------\n")
+        usuario_classe = Usuario()      
+        print(f"-------------- Login --------------\n")
         login = None 
-        login = self.__verifica_login_cliente(cliente_classe)
+        login = self.__verifica_login_usuario(usuario_classe)
         print('\n---------------------------------------')
         
         if login == True:
-            print("\n|O login foi efetuado com sucesso!")
+            print("\n| O login foi efetuado com sucesso!")
             time.sleep(3)
             print('\033[H\033[2J') 
         else:
             login = False
-            print("\n|O login não é válido.")
+            print("\n| O login não é válido.")
             time.sleep(3)
-            print('\033[H\033[2J') 
+            print('\033[H\033[2J')
+            
             
         return login
+    
         
     
     # método que cria um cadastro para cliente   
     def cria_cadastro_cliente(self, cliente: Type[Cliente]) -> None:
         cliente = cliente
         cliente_existente = None
-        cliente_existente = self.__verifica_login_cliente(cliente)
+        cliente_existente = self.__verifica_login_usuario(cliente)
+        
         if cliente_existente == False:
-            comando = """ INSERT INTO Usuarios(nome, endereco, telefone, email, cpf_cnpj, senha)
+            comando = """ INSERT INTO Usuarios(nome, endereco, telefone, email, cpf_cnpj, senha, tipo)
             VALUES
-              (?, ?, ?, ?, ?, ?)"""
-            cursor.execute(comando, cliente._nome, cliente._endereco, cliente._telefone, cliente._email, cliente._cpf_cnpj, cliente._senha )
+              (?, ?, ?, ?, ?, ?, ?)"""
+            cursor.execute(comando, cliente._nome, cliente._endereco, cliente._telefone, cliente._email, cliente._cpf_cnpj, cliente._senha, cliente.tipo )
             cursor.commit()
             consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
             cursor.execute(consulta) 
@@ -110,6 +116,7 @@ class Sistema:
             print("\n|O cadastro foi realizado com sucesso!")
             time.sleep(3)
             print('\033[H\033[2J') 
+            
 
         else:
             #cliente já cadastrado - Resposta ao usuário na função verifica_login
@@ -172,10 +179,10 @@ class Sistema:
         estabelecimento_existente = None
         estabelecimento_existente = self.__verifica_login_estabelecimento(estabelecimento)
         if estabelecimento_existente == False:
-            comando = """ INSERT INTO Usuarios(nome, endereco, telefone, email, cpf_cnpj, senha)
+            comando = """ INSERT INTO Usuarios(nome, endereco, telefone, email, cpf_cnpj, senha, tipo)
             VALUES
-              (?, ?, ?, ?, ?, ?)"""
-            cursor.execute(comando, estabelecimento._nome, estabelecimento._endereco, estabelecimento._telefone, estabelecimento._email, estabelecimento._cpf_cnpj, estabelecimento._senha )
+              (?, ?, ?, ?, ?, ?, ?)"""
+            cursor.execute(comando, estabelecimento._nome, estabelecimento._endereco, estabelecimento._telefone, estabelecimento._email, estabelecimento._cpf_cnpj, estabelecimento._senha, estabelecimento.tipo )
             cursor.commit()
             consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
             cursor.execute(consulta) 

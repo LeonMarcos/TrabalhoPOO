@@ -1,12 +1,16 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 15 15:04:34 2024
 
-@author: lmfel
-"""
+
+####################### BANCO DE DADOS ######################
+
+from Conex_SQL import connection
+
+cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis dentro do sql
+
+#############################################################
 
 from Usuario import Usuario
 from Item import Item
+import time
 
 class Estabelecimento(Usuario):
     # Atributos e construtor da classe Estabelecimento
@@ -28,27 +32,49 @@ class Estabelecimento(Usuario):
         return self.__horario_funcio
     
     #Método que verifica se um item já existeno cardapio. Se o item existir, retorna True.
-    def __verifica_item_cardapio(self, nome_item: str) -> bool:
-        for item_cardapio in self.__cardapio:
-            if item_cardapio.nome == nome_item:
+    def __verifica_item_cardapio(self, nome_item,estabelecimento: str) -> bool:
+        estabelecimento = estabelecimento
+        nome_item = nome_item
+        consulta = """ SELECT * FROM Itens WHERE loja_id = ?; """ #consulta o banco de dados
+        cursor.execute(consulta,estabelecimento.id) 
+        tabela = cursor.fetchall()
+        self.__cardapio = []
+        print('************ AQUI ESTÁ A TABELA ********\n\n',tabela)
+        print('\n\n******************************************')
+        for busca in tabela:
+            self.__cardapio.append(busca)
+        
+        for procura in self.__cardapio:
+            if procura.nome == nome_item:
                 return True
+        
         return False
     
     #Método que cadastra item no cardápio. O método só cadas um item no cadárpio caso ele seja novo.
-    def cadastra_item(self) -> None:
+    def cadastra_item(self,estabelecimento) -> None:
+        estabelecimento = estabelecimento
         item = Item()
-        item.cria_item() #Os itens só podem ser criados dentro dessa função.
+        item.cria_item(estabelecimento) #Os itens só podem ser criados dentro dessa função.
         nome_item = item.nome
-        if not self.__verifica_item_cardapio(nome_item):
-            self.__cardapio.append(item)
-            print("\nO item foi cadastrado com sucesso!")
+        if not self.__verifica_item_cardapio(nome_item,estabelecimento):
+            comando = """ INSERT INTO Itens(nome, descricao, preco, loja_id)
+            VALUES
+              (?, ?, ?, ?)"""
+            cursor.execute(comando, item.nome, item.descricao, item.preco, item.loja_id )
+            cursor.commit()
+            
+            print("\nItem cadastrado com sucesso!")
+            time.sleep(2)
         else:
-            print("\nO item solicitado já está cadastrado.")
+            print("\nEste item já possui cadastrado.")
+            time.sleep(2)
     
     #Método que exibe os itens cadastrados no cardápio.
-    def exibe_cardapio(self) -> None:
+    def exibe_cardapio(self, estabelecimento) -> None:
+        estabelecimento = estabelecimento
         if not self.__cardapio:
             print("\nO cardápio está vazio.")
+            time.sleep(3)
         else:
             print("\nO cardápio possui os seguintes itens: ")
             for item_cardapio in self.__cardapio:

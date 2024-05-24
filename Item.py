@@ -1,4 +1,5 @@
 
+
 class Item:
        
     def __init__(self):
@@ -8,14 +9,16 @@ class Item:
         self.preco = None
         
     #Método que cria um item.
-    def cria_item(self) -> None:
-        self.nome = input("\nPor favor informe o nome do item: ")
-        self.descricao = input("Por favor informe a descrição do item: ")
+    def cria_item(self,estabelecimento) -> None:
+        estabelecimento = estabelecimento
+        self.nome = input("\nNome do novo item: ")
+        self.descricao = input("Descrição do novo item: ")
         while True:
             try:
-                self.preco = float(input("Digite o valor do produto: "))
+                self.preco = float(input("Valor do produto: R$"))
                 break
             except ValueError:
                 print("O valor do produto é inválido. Por favor digite novamente.")
-    
+        self.loja_id = estabelecimento.id
+
     
