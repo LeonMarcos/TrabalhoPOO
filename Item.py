@@ -11,6 +11,8 @@ class Item:
     #Método que cria um item.
     def cria_item(self,estabelecimento) -> None:
         estabelecimento = estabelecimento
+        print('\033[H\033[2J')
+        print(f"-----------------  Cadastra Item -{estabelecimento.nome}  -----------------\n")
         self.nome = input("\nNome do novo item: ")
         self.descricao = input("Descrição do novo item: ")
         while True:

@@ -4,6 +4,7 @@
 
 from Conex_SQL import connection
 
+
 cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis dentro do sql
 
 #############################################################
@@ -39,8 +40,6 @@ class Estabelecimento(Usuario):
         cursor.execute(consulta,estabelecimento.id) 
         tabela = cursor.fetchall()
         self.__cardapio = []
-        print('************ AQUI ESTÁ A TABELA ********\n\n',tabela)
-        print('\n\n******************************************')
         for busca in tabela:
             self.__cardapio.append(busca)
         
@@ -72,15 +71,33 @@ class Estabelecimento(Usuario):
     #Método que exibe os itens cadastrados no cardápio.
     def exibe_cardapio(self, estabelecimento) -> None:
         estabelecimento = estabelecimento
-        if not self.__cardapio:
-            print("\nO cardápio está vazio.")
-            time.sleep(3)
-        else:
-            print("\nO cardápio possui os seguintes itens: ")
+        while True:
+            print('\033[H\033[2J')
+            print('*'*31," "*8,f"Cardápio - {estabelecimento.nome}"," "*8,'*'*31,"\n\n")
+            consulta = """ SELECT * FROM Itens WHERE loja_id = ?; """ #consulta o banco de dados
+            cursor.execute(consulta,estabelecimento.id) 
+            tabela = cursor.fetchall()
+            self.__cardapio = []
+            for busca in tabela:
+                self.__cardapio.append(busca)
+            if not self.__cardapio:
+                print("| O cardápio está vazio.")
+                input('\nPressione qualquer tecla para voltar')
+                return False
+                
+            
+            numero = 0
+            print("N° |           Nome            |            Descrição            |            Preço  ")
             for item_cardapio in self.__cardapio:
-                print(f"Nome: {item_cardapio.nome}, Descrição: {item_cardapio.descricao}, Preço: {item_cardapio.preco:.2f} reais.")
+                    # sys.stdout.flush()
+                    print("-"*100)
+                    numero = numero +1
+                    # Lista de caracteres a serem impressos
+                    print(numero, f"   {item_cardapio.nome}".ljust(30), f"{item_cardapio.descricao}".ljust(33), f"R${item_cardapio.preco:.2f}")
+            print("-"*100)
+            return False
     
-        #Método que remove um item desejado do cardápio com base no nome.
+    #Método que remove um item desejado do cardápio com base no nome.
     def remove_item_cardapio(self) -> None:
         nome_item = input("\nDigite o nome do item a ser removido: ")
         item_encontrado = None

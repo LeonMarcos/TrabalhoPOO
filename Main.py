@@ -1,13 +1,11 @@
-
-
-from pickle import TRUE
 import time
-from click import pause
 from Usuario import Usuario
 from Cliente import Cliente
 from Estabelecimento import Estabelecimento
 from Sistema import Sistema
-from typing import Type
+from Pedido import Pedido
+
+
 
 
 if __name__ == "__main__":
@@ -108,16 +106,16 @@ if __name__ == "__main__":
             if opcao == '1':
                 print('\033[H\033[2J')
                 print("-----------------  Lista de Estabelecimentos  -----------------\n\n")
-                pass
+                sistema1.exibe_estabelecimentos(cliente)
+                
 
             if opcao == '2':
                 print('\033[H\033[2J')
                 pass
 
             if opcao == '3':
-                print('\033[H\033[2J')
-                print("-----------------  Seus Pedidos  -----------------\n\n")
-                pass
+                pedido_aux = Pedido()
+                pedido_aux.historico_pedidos_cliente(cliente)
 
             if opcao == '4':
                 print('\033[H\033[2J')
@@ -150,7 +148,7 @@ if __name__ == "__main__":
             print("-----------------  UFMGFood  -----------------\n")
             print(f"\n| Olá, {estabelecimento.nome}!\n")
             print('1 - Pedidos Pendentes')
-            print('2 - Pedidos Finalizados')
+            print('2 - Pedidos Concluídos')
             print('3 - Cardápio')
             print('4 - Perfil')
             print('9 - Sair')
@@ -158,14 +156,22 @@ if __name__ == "__main__":
             opcao = None
             opcao = input('\nDigite a opção desejada:\t')
 
+            if opcao == '1':
+                pedido_aux = Pedido()
+                pedido_aux.historico_pedidos_estabelecimento(estabelecimento,'Pendente')
+
+            if opcao == '2':
+                pedido_aux = Pedido()
+                pedido_aux.historico_pedidos_estabelecimento(estabelecimento,'Concluído')
+
             if opcao == '3':
 
                 pg = None
                 while pg != '9':
                     print('\033[H\033[2J')
-                    print(f"-----------------  Cardápio -{estabelecimento.nome}  -----------------\n\n")
-                    #estab_classe.exibe_cardapio(estabelecimento)
-                    print('1 - Cadastram Novo Item')
+                    
+                    estab_classe.exibe_cardapio(estabelecimento)
+                    print('\n1 - Cadastram Novo Item')
                     print('2 - Alterar Item')
                     print('3 - Remover Item')
                     print('9 - Sair')
@@ -177,14 +183,23 @@ if __name__ == "__main__":
                         break
 
             if opcao == '4':
-                print('\033[H\033[2J')
-                print("-----------------  Seus Dados  -----------------\n\n")
-                print(f"| Nome: {estabelecimento.nome}")
-                print(f"| Endereço: {estabelecimento.endereco}")
-                print(f"| Telefone: {estabelecimento.telefone}")
-                print(f"| Email: {estabelecimento.email}")
-                print(f"| CNPJ: {estabelecimento.cpf_cnpj}")
-                input('\nPressione qualquer tecla para voltar\n')
+                while True:
+                    exb_dados = None
+                    print('\033[H\033[2J')
+                    print("-----------------  Seus Dados  -----------------\n\n")
+                    print(f"| Nome: {estabelecimento.nome}")
+                    print(f"| Endereço: {estabelecimento.endereco}")
+                    print(f"| Telefone: {estabelecimento.telefone}")
+                    print(f"| Email: {estabelecimento.email}")
+                    print(f"| CNPJ: {estabelecimento.cpf_cnpj}")
+                    exb_dados =  input('\nPressione qualquer tecla para voltar\n')
+                    
+                    if exb_dados == '1':
+                        pass
+
+                    if exb_dados == '9':
+                        return False
+
             
             sair = None
             if opcao == '9':

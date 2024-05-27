@@ -1,13 +1,16 @@
 
 
+
 ####################### BANCO DE DADOS ######################
 
 from Conex_SQL import connection
+
 
 cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis dentro do sql
 
 #############################################################
 
+from Carrinho import Carrinho
 from Usuario import Usuario
 from Cliente import Cliente
 from Estabelecimento import Estabelecimento
@@ -43,8 +46,8 @@ class Sistema:
             self.__lista_de_usuarios.append(busca)
         
         if usuario_login.get_email() == None and usuario_login.get_senha() == None:
-           login_email = input("\n| Digite seu e-mail: ")
-           login_senha = input("| Digite sua senha: ")
+           login_email = input("\nDigite seu e-mail: ")
+           login_senha = input("Digite sua senha: ")
            
            for usuario_banco in self.__lista_de_usuarios:
                if usuario_banco.email == login_email and \
@@ -113,7 +116,7 @@ class Sistema:
             for busca in tabela:
              self.__lista_de_clientes .append(busca)
 
-            print("\n|O cadastro foi realizado com sucesso!")
+            print("\n| O cadastro foi realizado com sucesso!")
             time.sleep(3)
             print('\033[H\033[2J') 
             
@@ -141,37 +144,16 @@ class Sistema:
         else:    
             for estabelecimento_banco in self.__lista_de_estabelecimentos:
                 if estabelecimento_banco.email == estabelecimento_login._email:
-                     print('Email já cadastrado por outro usuário!')
+                     print('| Email já cadastrado por outro usuário!')
                      time.sleep(3)
                      print('\033[H\033[2J') 
                      return True 
                 if estabelecimento_banco.cpf_cnpj == estabelecimento_login._cpf_cnpj: #alterei para email ou cpf/cnpj iguais
-                    print('CNPJ já cadastrado por outro usuário!')
+                    print('| CNPJ já cadastrado por outro usuário!')
                     time.sleep(3)
                     print('\033[H\033[2J') 
                     return True
-        return False
-    
-    # método que retorna o estabelecimento
-    def login_estabelecimento(self, estabelecimento: Type[Estabelecimento]) -> bool:
-        print('\033[H\033[2J')
-        print("\n-------------- Login Estabelecimento  --------------\n")
-        estabelecimento_classe = Estabelecimento()
-        login = None
-        login = self.__verifica_login_estabelecimento(estabelecimento_classe)
-        print('\n---------------------------------------')
-        if login == True:
-            print("\n|O login foi efetuado com sucesso!")
-            time.sleep(3)
-            print('\033[H\033[2J') 
-        else:
-            print("\n|O login não é válido.")
-            time.sleep(3)
-            print('\033[H\033[2J')
-            
-            
-        return login
-        
+        return False       
     
     # método que cria um cadastro para estabelecimento   
     def cria_cadastro_estabelecimento(self, estabelecimento: Type[Estabelecimento]) -> None:
@@ -198,16 +180,55 @@ class Sistema:
             pass
             
     # Método que exibe uma lista de estabelecimentos cadastrados e associa cada estabelecimento a um número inteiro diferente
-    def exibe_estabelecimentos(self) ->"Estabelecimento":
-        numero = 0
+    def exibe_estabelecimentos(self, cliente) ->"Estabelecimento":
+        cliente = cliente
+        carrinho_aux = Carrinho()
+        
+        consulta = """ SELECT * FROM Usuarios
+                        WHERE tipo = 'Estabelecimento';
+           """ #consulta o banco de dados
+        cursor.execute(consulta) 
+        tabela = cursor.fetchall()
+        self.__lista_de_estabelecimentos  = []
+        self.__numeros_estabelecimentos = []
+        for busca in tabela:
+            self.__lista_de_estabelecimentos.append(busca)
+
+        # self.__lista_de_estabelecimentos = [] # tirar comentário para simular nenhum estabelecimento cadastrado
         if not self.__lista_de_estabelecimentos:
-            print("\nNão existem estabelecimento cadastradas no aplicativo.")
+            print("\n| Não existem estabelecimento cadastradas no aplicativo.")
+            time.sleep(3)
         else:
-            print("\nLista de estabelecimentos cadastrados em nosso aplicativo: ")
-            for estabelecimento in self.__lista_de_estabelecimentos:
-                numero = numero +1
-                print(numero,"-", f"Nome: {estabelecimento.get_nome(),}")
-                self.__numeros_estabelecimentos.append(numero)
+            while True:
+                print('\033[H\033[2J')
+                print("-----------------  Lista de Estabelecimentos  -----------------\n")
+                numero = 0
+                
+                for estab in self.__lista_de_estabelecimentos:
+                    numero = numero + 1
+                    print(estab.id,"–", estab.nome)
+                    if not numero in self.__numeros_estabelecimentos:
+                        self.__numeros_estabelecimentos.append(numero)
+                        #self.__lista_de_estabelecimentos.append(estabelecimento)
+                    print("-"*50)
+                print("0 – Voltar") 
+                
+                navegar = 0
+                navegar = int(input('\nDigite a opção desejada:\t'))
+                
+                for proc in self.__lista_de_estabelecimentos:
+                    if proc.id == navegar:
+                            print('\033[H\033[2J')
+                            carrinho_aux.menu(proc, cliente)
+                            return False
+                            
+                            
+
+                if navegar == 0:
+                    return False
+        
+            
+            
         
             
 if __name__ == "__main__":
