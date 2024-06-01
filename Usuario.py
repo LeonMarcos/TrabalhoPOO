@@ -1,13 +1,17 @@
-
-
 from abc import ABC, abstractmethod
-import math
 import re
 
-
 class Usuario:
-    #Constantes
-    padrao_telefone = r"\d{11,}$"
+    # Constantes
+    # Regex para garantir que o telefone tenha exatamente 11 dígitos
+    padrao_telefone = r"^\d{11}$"
+    # Regex para garantir que o nome só contenha letras e espaços
+    padrao_nome = r"^[a-zA-Z ]+$"
+    # Regex para garantir que o cpf tenha exatamente 11 dígitos
+    padrao_cpf = r"^\d{11}$"
+    # Regex para garantir que o cnpj tenha exatamente 14 dígitos
+    padrao_cnpj = r"^\d{14}$"
+
     # Atributos e construtor da classe Usuario
     def __init__(self) -> None:
         self._nome = None
@@ -17,106 +21,130 @@ class Usuario:
         self._cpf_cnpj = None
         self._senha = None
         self._saldo = None
-        
-    # método get nome responsável por retornar o nome do usuario    
+        self.tipo = self.__class__.__name__
+
+    # Métodos getters
     def get_nome(self) -> str:
         return self._nome
-        
-    # método get endereco responsável por retornar o endereco do usuario    
-    def get_endereco(self) -> str:
-        return  self._endereco
-    
-    # método get telefone responsável por retornar o telefone do usuario    
-    def get_telefone(self) -> int:
-        return  self._telefone
-    
-    # método get email responsável por retornar o email do usuario    
-    def get_email(self) -> str:
-        return  self._email
-        
-    # método get cpf_cnpj responsável por retornar o cpf_cnpj do usuario    
-    def get_cpf_cnpj(self) -> int:
-        return  self._cpf_cnpj
-    
-    # método get senha responsável por retornar a senha do usuario
-    def get_senha(self) -> str:
-        return  self._senha
 
-    # método get saldo responsável por retornar o saldo do usuario
+    def get_endereco(self) -> str:
+        return self._endereco
+
+    def get_telefone(self) -> int:
+        return self._telefone
+
+    def get_email(self) -> str:
+        return self._email
+
+    def get_cpf_cnpj(self) -> int:
+        return self._cpf_cnpj
+
+    def get_senha(self) -> str:
+        return self._senha
+
     def atualiza_saldo(self, saldo) -> None:
         self._saldo = saldo
-    
-    # método get saldo responsável por retornar o saldo do usuario
-    def get_saldo(self) -> float:
-        return  self._saldo
-    
-    # método abstrato responsavel por criar o Usuario
-    def cria_Usuario(self) -> None:
 
+    def get_saldo(self) -> float:
+        return self._saldo
+
+    # Método responsável por criar o usuário
+    def cria_Usuario(self) -> None:
         print('\033[H\033[2J')
         print(f"\n---------  Cadastrar {self.__class__.__name__}  ---------\n")
-        
-        #Tratamento de exceção para o nome
+
+        # Tratamento de exceção para o nome
         while True:
             try:
-                self._nome = str(input("\nNome: "))
-                break
+                nome = str(input("\nNome: "))
+                if len(nome.split()) >= 2 and re.fullmatch(self.padrao_nome, nome):
+                    self._nome = nome
+                    break
+                else:
+                    print("Nome inválido. Por favor, digite um nome com no mínimo 3 palavras, contendo apenas letras e espaços.")
             except:
-                print("Nome inválido. Por favor digite novamente.")
-                
-        #Tratamento de exceção para o endereco
+                print("Nome inválido. Por favor, digite novamente.")
+
+        # Tratamento de exceção para o endereço
         while True:
             try:
                 self._endereco = str(input("Endereço: "))
                 break
             except:
-                print("Endereço inválido. Por favor digite novamente.")
-                
-        #Tratamento de exceção para o telefone
+                print("Endereço inválido. Por favor, digite novamente.")
+
+        # Tratamento de exceção para o telefone
         while True:
             try:
-                self._telefone = int(input("Telefone: "))
-                break
+                telefone = input("Telefone (11 dígitos com DDD): ")
+                if re.fullmatch(self.padrao_telefone, telefone):
+                    self._telefone = int(telefone)
+                    break
+                else:
+                    print("Número de telefone inválido. Por favor, digite um número com 11 dígitos (DDD + número).")
             except:
-                print("Número de telefone inválido. Por favor digite novamente.")
-        
-        #Tratamento de exceção para o email
+                print("Número de telefone inválido. Por favor, digite novamente.")
+
+        # Tratamento de exceção para o email
         while True:
             try:
                 self._email = str(input("E-mail: "))
-                break
+                if "@" in self._email:
+                    break
+                else:
+                    print("E-mail inválido. O e-mail deve conter '@'.")
             except:
-                print("E-mail inválido. Por favor digite novamente.")
-        
-        #Tratamento de exceção para o cpf_cnpj
-        while True:
-            try:
-                self._cpf_cnpj = int(input("Digite seu cpf_cnpj: "))
-                break
-            except:
-                print("Número de cpf_cnpj inválido. Por favor digite novamente.")
-        
-        #Tratamento de exceção para o senha
-        while True:
-            try:
-                self._senha = str(input("Digite seu senha: "))
-                break
-            except:
-                print("Senha inválida. Por favor digite novamente.")
+                print("E-mail inválido. Por favor, digite novamente.")
 
-        self.tipo = self.__class__.__name__
+        # Tratamento de exceção para o cpf/cnpj
+        while True:
+            try:
+                if self.tipo == 'Cliente':
+                    cpf = re.sub(r'\D', '', input("CPF (11 dígitos somente números.): "))
+                    if re.fullmatch(self.padrao_cpf, cpf):
+                        self._cpf_cnpj = int(cpf)
+                        break
+                    else:
+                        print("Número de CPF inválido. Por favor, digite novamente.")
+                else:
+                    cnpj = re.sub(r'\D', '', input("CNPJ (10 dígitos somente números. O 0001 será adicionado automaticamente.): "))
+                    if len(cnpj) == 10 and cnpj.isdigit():
+                        # Insere '0001' entre o 8º e o 9º dígito
+                        cnpj = cnpj[:8] + '0001' + cnpj[8:]
+                        self._cpf_cnpj = int(cnpj)
+                        break
+                    else:
+                        print("Número de CNPJ inválido. Por favor, digite novamente.")
+            except:
+                print("Número de CPF/CNPJ inválido. Por favor, digite novamente.")
+
+        # Tratamento de exceção para a senha
+        while True:
+            try:
+                senha = input("Digite sua senha: ")
+                if len(senha) >= 6:
+                    self._senha = senha
+                    break
+                else:
+                    print("A senha deve ter pelo menos 6 dígitos. Por favor, digite novamente.")
+            except:
+                print("Senha inválida. Por favor, digite novamente.")
+
+        # self.tipo = self.__class__.__name__
         print('\033[H\033[2J')
-        
-        
+
 
 if __name__ == "__main__":
-    usuarioum = Usuario()
-    usuarioum.cria_Usuario()
-    print("\n")
-    print(usuarioum.get_nome())
-    print(usuarioum.get_endereco())
-    print(usuarioum.get_telefone())
-    print(usuarioum.get_email())
-    print(usuarioum.get_cpf_cnpj())
-    print(usuarioum.get_senha())
-    
+
+    # Testando com Estabelecimento
+    estabelecimento = Usuario()
+    estabelecimento.cria_Usuario()
+    print("\nEstabelecimento:")
+    print(estabelecimento.get_nome())
+    print(estabelecimento.get_endereco())
+    print(estabelecimento.get_telefone())
+    print(estabelecimento.get_email())
+    print(estabelecimento.get_cpf_cnpj())
+    print(estabelecimento.get_senha())
+    print(estabelecimento.tipo)
+
