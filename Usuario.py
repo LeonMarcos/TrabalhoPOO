@@ -132,7 +132,7 @@ class Usuario:
                 print("Senha inválida. Por favor, digite novamente.")
 
         # self.tipo = self.__class__.__name__
-        os.system('cls')
+        print('\033[H\033[2J')
 
 
 if __name__ == "__main__":
