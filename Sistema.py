@@ -16,6 +16,8 @@ from Cliente import Cliente
 from Estabelecimento import Estabelecimento
 from typing import Type
 import time
+import os
+
 
 dados_usuario = None
 
@@ -24,7 +26,6 @@ class Sistema:
     def __init__(self) -> None:
         self.__lista_de_usuarios = []
         self.__lista_de_estabelecimentos = []
-        self.__numeros_estabelecimentos = []
 
     def salva_dados_usuario(self, usuario):  
         self.dados_usuario = usuario
@@ -35,7 +36,7 @@ class Sistema:
 
         
         
-    # método que verifica se o cliente existe na lista de cliente
+    # método que verifica se o usuário existe na lista de usuários
     def __verifica_login_usuario(self, usuario: Type[Usuario]) -> bool:
         usuario_login = usuario
         consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
@@ -57,25 +58,26 @@ class Sistema:
                            
         else:         
             for usuario_banco in self.__lista_de_usuarios :
+                    
                 if usuario_banco.email == usuario_login._email:
                     print('| Email já cadastrado por outro usuário!')
                     time.sleep(3)
-                    print('\033[H\033[2J') 
+                    os.system('cls')
                     return True 
                 
                 if usuario_banco.cpf_cnpj == usuario_login._cpf_cnpj: #alterei para email OU cpf/cnpj iguais
                     print('| CPF já cadastrado por outro usuário!')
                     time.sleep(3)
-                    print('\033[H\033[2J') 
+                    os.system('cls')
                     return True
                      
         return False
      
     
-    # método que retorna o cliente
+    # método que retorna o usuário
     def login_usuario(self) -> bool:
         
-        print('\033[H\033[2J')
+        os.system('cls')
         usuario_classe = Usuario()      
         print(f"-------------- Login --------------\n")
         login = None 
@@ -85,14 +87,13 @@ class Sistema:
         if login == True:
             print("\n| O login foi efetuado com sucesso!")
             time.sleep(3)
-            print('\033[H\033[2J') 
+            os.system('cls')
         else:
             login = False
             print("\n| O login não é válido.")
             time.sleep(3)
-            print('\033[H\033[2J')
-            
-            
+            os.system('cls')
+
         return login
     
         
@@ -118,12 +119,8 @@ class Sistema:
 
             print("\n| O cadastro foi realizado com sucesso!")
             time.sleep(3)
-            print('\033[H\033[2J') 
+            os.system('cls') 
             
-
-        else:
-            #cliente já cadastrado - Resposta ao usuário na função verifica_login
-            pass
             
     # método que verifica se o estabelecimento existe na lista de estabelecimento
     def __verifica_login_estabelecimento(self, estabelecimento: Type[Estabelecimento]) -> bool:
@@ -143,15 +140,20 @@ class Sistema:
                        return True    
         else:    
             for estabelecimento_banco in self.__lista_de_estabelecimentos:
+                if estabelecimento_banco.nome == estabelecimento_login._nome:
+                        print('| Nome já cadastrado por outro estabelecimento!')
+                        time.sleep(3)
+                        os.system('cls')
+                        return True 
                 if estabelecimento_banco.email == estabelecimento_login._email:
                      print('| Email já cadastrado por outro usuário!')
                      time.sleep(3)
-                     print('\033[H\033[2J') 
+                     os.system('cls') 
                      return True 
                 if estabelecimento_banco.cpf_cnpj == estabelecimento_login._cpf_cnpj: #alterei para email ou cpf/cnpj iguais
                     print('| CNPJ já cadastrado por outro usuário!')
                     time.sleep(3)
-                    print('\033[H\033[2J') 
+                    os.system('cls') 
                     return True
         return False       
     
@@ -174,10 +176,8 @@ class Sistema:
                 self.__lista_de_estabelecimentos.append(busca)
             print("\n|O cadastro foi realizado com sucesso!")
             time.sleep(3)
-            print('\033[H\033[2J') 
-        else:
-            #estabelecimento já cadastrado - Resposta ao usuário na função verifica_login
-            pass
+            os.system('cls')
+        
             
     # Método que exibe uma lista de estabelecimentos cadastrados e associa cada estabelecimento a um número inteiro diferente
     def exibe_estabelecimentos(self, cliente) ->"Estabelecimento":
@@ -190,26 +190,23 @@ class Sistema:
         cursor.execute(consulta) 
         tabela = cursor.fetchall()
         self.__lista_de_estabelecimentos  = []
-        self.__numeros_estabelecimentos = []
+        
         for busca in tabela:
             self.__lista_de_estabelecimentos.append(busca)
 
         # self.__lista_de_estabelecimentos = [] # tirar comentário para simular nenhum estabelecimento cadastrado
         if not self.__lista_de_estabelecimentos:
-            print("\n| Não existem estabelecimento cadastradas no aplicativo.")
-            time.sleep(3)
+            print("\n| Não existem estabelecimentos cadastrados no aplicativo.")
+            os.system('cls')
         else:
             while True:
-                print('\033[H\033[2J')
+                os.system('cls')
                 print("-----------------  Lista de Estabelecimentos  -----------------\n")
                 numero = 0
                 
                 for estab in self.__lista_de_estabelecimentos:
                     numero = numero + 1
                     print(estab.id,"–", estab.nome)
-                    if not numero in self.__numeros_estabelecimentos:
-                        self.__numeros_estabelecimentos.append(numero)
-                        #self.__lista_de_estabelecimentos.append(estabelecimento)
                     print("-"*50)
                 print("0 – Voltar") 
                 
@@ -218,11 +215,12 @@ class Sistema:
                 
                 for proc in self.__lista_de_estabelecimentos:
                     if proc.id == navegar:
-                            print('\033[H\033[2J')
-                            carrinho_aux.menu(proc, cliente)
-                            return False
-                            
-                            
+                            os.system('cls')
+                            car = carrinho_aux.menu(proc, cliente)
+                            if car == False: # nessa condição o carrinho não está finalizado e mantém o menu lista de estabelecimentos aberto
+                                pass
+                            if car == True: # quando finalizar o carrinho, será possível voltar ao menu inicial
+                                return False
 
                 if navegar == 0:
                     return False

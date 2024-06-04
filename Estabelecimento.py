@@ -12,6 +12,7 @@ cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis
 from Usuario import Usuario
 from Item import Item
 import time
+import os
 
 class Estabelecimento(Usuario):
     # Atributos e construtor da classe Estabelecimento
@@ -72,7 +73,7 @@ class Estabelecimento(Usuario):
     def exibe_cardapio(self, estabelecimento) -> None:
         estabelecimento = estabelecimento
         while True:
-            print('\033[H\033[2J')
+            os.system('cls')
             print('*'*31," "*8,f"Cardápio - {estabelecimento.nome}"," "*8,'*'*31,"\n\n")
             consulta = """ SELECT * FROM Itens WHERE loja_id = ?; """ #consulta o banco de dados
             cursor.execute(consulta,estabelecimento.id) 
@@ -82,7 +83,7 @@ class Estabelecimento(Usuario):
                 self.__cardapio.append(busca)
             if not self.__cardapio:
                 print("| O cardápio está vazio.")
-                input('\nPressione qualquer tecla para voltar')
+                input('\nPressione ENTER para voltar')
                 return False
                 
             
@@ -95,7 +96,8 @@ class Estabelecimento(Usuario):
                     # Lista de caracteres a serem impressos
                     print(numero, f"   {item_cardapio.nome}".ljust(30), f"{item_cardapio.descricao}".ljust(33), f"R${item_cardapio.preco:.2f}")
             print("-"*100)
-            return False
+            break
+        
     
     #Método que remove um item desejado do cardápio com base no nome.
     def remove_item_cardapio(self) -> None:
