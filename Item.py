@@ -1,4 +1,4 @@
-import os
+from Utilitarios import limpar_tela
 
 class Item:
        
@@ -11,7 +11,7 @@ class Item:
     #Método que cria um item.
     def cria_item(self,estabelecimento) -> None:
         estabelecimento = estabelecimento
-        os.system('cls')
+        limpar_tela()
         print(f"-----------------  Cadastra Item -{estabelecimento.nome}  -----------------\n")
         self.nome = input("\nNome do novo item: ")
         self.descricao = input("Descrição do novo item: ")

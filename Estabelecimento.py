@@ -12,7 +12,7 @@ cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis
 from Usuario import Usuario
 from Item import Item
 import time
-import os
+from Utilitarios import limpar_tela
 
 class Estabelecimento(Usuario):
     # Atributos e construtor da classe Estabelecimento
@@ -73,7 +73,7 @@ class Estabelecimento(Usuario):
     def exibe_cardapio(self, estabelecimento) -> None:
         estabelecimento = estabelecimento
         while True:
-            os.system('cls')
+            limpar_tela()
             print('*'*31," "*8,f"Cardápio - {estabelecimento.nome}"," "*8,'*'*31,"\n\n")
             consulta = """ SELECT * FROM Itens WHERE loja_id = ?; """ #consulta o banco de dados
             cursor.execute(consulta,estabelecimento.id) 

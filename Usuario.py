@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import re
-import os
+from Utilitarios import limpar_tela
 
 class Usuario:
     # Constantes
@@ -51,7 +51,7 @@ class Usuario:
 
     # Método responsável por criar o usuário
     def cria_Usuario(self) -> None:
-        os.system('cls')
+        limpar_tela()
         print(f"\n---------  Cadastrar {self.__class__.__name__}  ---------\n")
 
         # Tratamento de exceção para o nome
@@ -132,7 +132,7 @@ class Usuario:
                 print("Senha inválida. Por favor, digite novamente.")
 
         # self.tipo = self.__class__.__name__
-        print('\033[H\033[2J')
+        limpar_tela()
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ from Cliente import Cliente
 from Estabelecimento import Estabelecimento
 from typing import Type
 import time
-import os
+from Utilitarios import limpar_tela
 
 
 dados_usuario = None
@@ -62,13 +62,13 @@ class Sistema:
                 if usuario_banco.email == usuario_login._email:
                     print('| Email já cadastrado por outro usuário!')
                     time.sleep(3)
-                    os.system('cls')
+                    limpar_tela()
                     return True 
                 
                 if usuario_banco.cpf_cnpj == usuario_login._cpf_cnpj: #alterei para email OU cpf/cnpj iguais
                     print('| CPF já cadastrado por outro usuário!')
                     time.sleep(3)
-                    os.system('cls')
+                    limpar_tela()
                     return True
                      
         return False
@@ -77,9 +77,9 @@ class Sistema:
     # método que retorna o usuário
     def login_usuario(self) -> bool:
         
-        os.system('cls')
+        limpar_tela()
         usuario_classe = Usuario()      
-        print(f"-------------- Login --------------\n")
+        print("-------------- Login --------------\n")
         login = None 
         login = self.__verifica_login_usuario(usuario_classe)
         print('\n---------------------------------------')
@@ -87,12 +87,12 @@ class Sistema:
         if login == True:
             print("\n| O login foi efetuado com sucesso!")
             time.sleep(3)
-            os.system('cls')
+            limpar_tela()
         else:
             login = False
             print("\n| O login não é válido.")
             time.sleep(3)
-            os.system('cls')
+            limpar_tela()
 
         return login
     
@@ -119,7 +119,7 @@ class Sistema:
 
             print("\n| O cadastro foi realizado com sucesso!")
             time.sleep(3)
-            os.system('cls') 
+            limpar_tela() 
             
             
     # método que verifica se o estabelecimento existe na lista de estabelecimento
@@ -143,17 +143,17 @@ class Sistema:
                 if estabelecimento_banco.nome == estabelecimento_login._nome:
                         print('| Nome já cadastrado por outro estabelecimento!')
                         time.sleep(3)
-                        os.system('cls')
+                        limpar_tela()
                         return True 
                 if estabelecimento_banco.email == estabelecimento_login._email:
                      print('| Email já cadastrado por outro usuário!')
                      time.sleep(3)
-                     os.system('cls') 
+                     limpar_tela() 
                      return True 
                 if estabelecimento_banco.cpf_cnpj == estabelecimento_login._cpf_cnpj: #alterei para email ou cpf/cnpj iguais
                     print('| CNPJ já cadastrado por outro usuário!')
                     time.sleep(3)
-                    os.system('cls') 
+                    limpar_tela() 
                     return True
         return False       
     
@@ -176,7 +176,7 @@ class Sistema:
                 self.__lista_de_estabelecimentos.append(busca)
             print("\n|O cadastro foi realizado com sucesso!")
             time.sleep(3)
-            os.system('cls')
+            limpar_tela()
         
             
     # Método que exibe uma lista de estabelecimentos cadastrados e associa cada estabelecimento a um número inteiro diferente
@@ -197,10 +197,10 @@ class Sistema:
         # self.__lista_de_estabelecimentos = [] # tirar comentário para simular nenhum estabelecimento cadastrado
         if not self.__lista_de_estabelecimentos:
             print("\n| Não existem estabelecimentos cadastrados no aplicativo.")
-            os.system('cls')
+            limpar_tela()
         else:
             while True:
-                os.system('cls')
+                limpar_tela()
                 print("-----------------  Lista de Estabelecimentos  -----------------\n")
                 numero = 0
                 
@@ -215,7 +215,7 @@ class Sistema:
                 
                 for proc in self.__lista_de_estabelecimentos:
                     if proc.id == navegar:
-                            os.system('cls')
+                            limpar_tela()
                             car = carrinho_aux.menu(proc, cliente)
                             if car == False: # nessa condição o carrinho não está finalizado e mantém o menu lista de estabelecimentos aberto
                                 pass

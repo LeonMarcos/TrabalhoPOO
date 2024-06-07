@@ -4,7 +4,7 @@ from Cliente import Cliente
 from Estabelecimento import Estabelecimento
 from Sistema import Sistema
 from Pedido import Pedido
-import os
+from Utilitarios import limpar_tela
 
 
 
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         estabelecimento1 = Estabelecimento()
         
         while True:
-            os.system('cls')
+            limpar_tela()
             print("-----------------  UFMGFood  -----------------\n\n")
             print("| O melhor aplicativo de delivery da UFMG!\n")
             print('1 - Login')
@@ -42,12 +42,12 @@ if __name__ == "__main__":
                         usuario1 = sistema1.retorna_dados_usuario()
                         
                         if usuario1.tipo == 'Cliente':
-                            os.system('cls')
+                            limpar_tela()
                             cliente1 = usuario1
                             menu_app_cliente(cliente1)
 
                         if usuario1.tipo == 'Estabelecimento':
-                            os.system('cls')
+                            limpar_tela()
                             estabelecimento1 = usuario1
                             menu_app_estabelecimento(estabelecimento1)
                         
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
                 opcao = None
                 while opcao != '9':
-                    os.system('cls')
+                    limpar_tela()
                     print('--------------  Cadastro   --------------\n\n')
                     print('1 - Cadastrar como cliente')
                     print('2 - Cadastrar como estabelecimento')
@@ -65,19 +65,19 @@ if __name__ == "__main__":
                     opcao = input("\n\nDigite a opção desejada:\t")
                     
                     if opcao == '1':
-                        os.system('cls')
+                        limpar_tela()
                         cliente1.cria_Usuario()
                         sistema1.cria_cadastro_cliente(cliente1)
                         break
 
                     if opcao == '2':
-                        os.system('cls')
+                        limpar_tela()
                         estabelecimento1.cria_Usuario()
                         sistema1.cria_cadastro_estabelecimento(estabelecimento1)  
                         break
 
                     if opcao == '0':
-                        os.system('cls')
+                        limpar_tela()
                         break
                     
             if conta_existe == '0':
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     def menu_app_cliente(cliente):
 
         while True:
-            os.system('cls')
+            limpar_tela()
             print("-----------------  UFMGFood  -----------------\n\n")
             print(f"| Olá, {cliente.nome}!\n")
             print('1 - Início')
@@ -105,26 +105,26 @@ if __name__ == "__main__":
             
             opcao = None
             opcao = input('\nDigite a opção desejada:\t')
-            os.system('cls')
+            limpar_tela()
                         
             if opcao == '1':
-                os.system('cls')
+                limpar_tela()
                 print("-----------------  Lista de Estabelecimentos  -----------------\n\n")
                 sistema1.exibe_estabelecimentos(cliente)
                 
 
             if opcao == '2':
-                os.system('cls')
+                limpar_tela()
                 pass
 
             if opcao == '3':
-                os.system('cls')
+                limpar_tela()
                 pedido_aux = Pedido()
                 pedido_aux.historico_pedidos_cliente(cliente)
 
-            os.system('cls')
+            limpar_tela()
             if opcao == '4':
-                os.system('cls')
+                limpar_tela()
                 print("-----------------  Seus Dados  -----------------\n\n")
                 print(f"| Nome: {cliente.nome}")
                 print(f"| Endereço: {cliente.endereco}")
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         estab_classe = Estabelecimento() #variavel auxiliar
 
         while True:
-            os.system('cls')
+            limpar_tela()
             print("-----------------  UFMGFood  -----------------\n")
             print(f"\n| Olá, {estabelecimento.nome}!\n")
             print('1 - Pedidos Pendentes')
@@ -163,12 +163,12 @@ if __name__ == "__main__":
             opcao = input('\nDigite a opção desejada:\t')
 
             if opcao == '1':
-                os.system('cls')
+                limpar_tela()
                 pedido_aux = Pedido()
                 pedido_aux.historico_pedidos_estabelecimento(estabelecimento,'Pendente')
 
             if opcao == '2':
-                os.system('cls')
+                limpar_tela()
                 pedido_aux = Pedido()
                 pedido_aux.historico_pedidos_estabelecimento(estabelecimento,'Finalizado')
 
@@ -176,7 +176,7 @@ if __name__ == "__main__":
                 
                 pg = None
                 while pg != '0':
-                    os.system('cls')
+                    limpar_tela()
                     estab_classe.exibe_cardapio(estabelecimento)
                     print('\n1 - Cadastram Novo Item')
                     print('2 - Alterar Item')
@@ -188,18 +188,18 @@ if __name__ == "__main__":
                     
                     if pg == '0':
                         break
-            os.system('cls')
+            limpar_tela()
             if opcao == '4':
                 while True:
                     exb_dados = None
-                    os.system('cls')
+                    limpar_tela()
                     print("-----------------  Seus Dados  -----------------\n\n")
                     print(f"| Nome: {estabelecimento.nome}")
                     print(f"| Endereço: {estabelecimento.endereco}")
                     print(f"| Telefone: {estabelecimento.telefone}")
                     print(f"| Email: {estabelecimento.email}")
                     print(f"| CNPJ: {estabelecimento.cpf_cnpj}")
-                    exb_dados =  input('\nPressione ENTER para voltar\n')
+                    exb_dados =  input('\nPressione ENTER para voltar.\n')
                     
                     if exb_dados == '1':
                         pass

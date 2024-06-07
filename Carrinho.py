@@ -14,7 +14,8 @@ from Item import Item
 from Estabelecimento import Estabelecimento
 from Pedido import Pedido
 import time
-import os
+from Utilitarios import limpar_tela
+
 
 class Carrinho:
     # Atributos e construtor da classe Carrinho
@@ -28,7 +29,7 @@ class Carrinho:
         cliente = cliente
         veri = None
         while True:
-            os.system('cls')
+            limpar_tela()
             estab_aux = Estabelecimento()
             estabelecimento = estabelecimento
             veri = estab_aux.exibe_cardapio(estabelecimento)
@@ -53,7 +54,7 @@ class Carrinho:
                 self.remove_carrinho()
 
             if opcao == '3':
-                os.system('cls')
+                limpar_tela()
                 confirma = False
                 confirma = self.exibe_carrinho(estabelecimento, cliente)
                 if confirma == True:
@@ -101,7 +102,7 @@ class Carrinho:
                     for procura in self.lista_carrinho:   #busca o código no carrinho para não repetir o produto na lista, aumenta apenas a quantidade
                         
                         if procura.loja_id != busca.loja_id:
-                             os.system('cls')
+                             limpar_tela()
                              print('| Você não pode selecionar itens de lojas diferentes')
                              time.sleep(2)
                              ok = False
@@ -151,7 +152,7 @@ class Carrinho:
     def exibe_carrinho(self, estabelecimento, cliente) -> bool:
         estabelecimento = estabelecimento
         cliente = cliente
-        os.system('cls')
+        limpar_tela()
         print('\n\n------------- CARRINHO -------------')
         for p in self.lista_carrinho:
              estab_car = p.estab_car
@@ -185,14 +186,14 @@ class Carrinho:
             if estab_car == estabelecimento.nome:
                 finalizar = input('\nDeseja finalizar o seu pedido?\t (s/n)\t')
                 if finalizar == 's':
-                        os.system('cls')
+                        limpar_tela()
                         print('\n| Pedido enviado!')
                         time.sleep(2.5)
                         self.finalizar_carrinho(cliente)
                         return True
                         
                 elif 'n':
-                        os.system('cls')
+                        limpar_tela()
                         print("\n| Você pode revisar seu pedido!")
                         time.sleep(2)
                         return False
