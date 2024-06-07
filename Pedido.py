@@ -1,47 +1,45 @@
 ####################### BANCO DE DADOS ######################
 
-import time
 from Conex_SQL import connection
-
 
 cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis dentro do sql
 
 #############################################################
 
-import random
+import time
 import datetime
-import os
+from Utilitarios import limpar_tela
 
 class Pedido:
-        #Atributos e construtor
-        def __init__(self:str) -> None: #Cria um pedido com base no nome do cliente         
-            #self.nome = nome
-            self.data_pedido = datetime.date.today()#Data em que o pedido foi realizado
-            #self.numero =''.join([str(random.randint(0, 9)) for _ in range(4)]) #Cria um número aleatório de 4 digitos para ser o número do pedido
-            self.total = None
+        
+        def __init__(self:str) -> None: #Construtor
+        
+            data_hora_atual = datetime.datetime.now() #Obtém a data e a hora atuais
+            data_hora_formatada = data_hora_atual.strftime("%d/%m/%Y às %H:%M:%S") #Formata a data e a hora no formato desejado
             
+            self.data_horario_pedido = str(data_hora_formatada) #Data e horário que o pedido foi realizado
+            self.total = None
 
-
-        def cria_pedido(self, lista, cliente):
-            #car_aux = Carrinho()
-            # estabelecimento = estabelecimento
+        def cria_pedido(self, lista, cliente) -> None:
+            
             cliente = cliente
             self.lista = lista
-            #self.status = 'Pendente'
+            self.status = ''
             cursor.execute("SELECT MAX(id) FROM Pedidos")
             ultimo_id = cursor.fetchone()[0]
             self.id = ultimo_id + 1
             
             for p in self.lista:
-                comando = """ INSERT INTO Pedidos(id, loja_id, cliente_id, id_item, quant_item, preco, subtotal, endereco, data_pedido, status_pedido, nome_cliente, nome_loja, nome_item)
+                comando = """ INSERT INTO Pedidos(id, loja_id, cliente_id, id_item, quant_item, preco, subtotal, endereco, data_horario_pedido, status_pedido, nome_cliente, nome_loja, nome_item)
                 VALUES
                 (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
-                cursor.execute(comando, self.id, p.estab_id, p.cliente_id, p.item_id, p.quant, p.preco, p.subtotal, p.endereco, 'hoje', 'Pendente', p.cliente_nome, p.estab_nome, p.nome)
+                cursor.execute(comando, self.id, p.estab_id, p.cliente_id, p.item_id, p.quant, p.preco, p.subtotal, p.endereco, self.data_horario_pedido, 'Pendente', p.cliente_nome, p.estab_nome, p.nome)
                 cursor.commit()
 
             self.historico_pedidos_cliente(cliente)
         
-        def exibe_pedido(self,pedido,usuario):
+        def exibe_pedido(self,pedido,usuario) -> None:
+            
             while True:
                 usuario = usuario
                 pedido = pedido
@@ -53,13 +51,15 @@ class Pedido:
                 for busca in tabela:
                     self.lista_pedido.append(busca)
 
-                os.system('cls')
-                print(f"\n\n","-"*30, "Detalhes do Pedido","-"*30,"\n")
+                limpar_tela()
+                print("\n\n","-"*30, "Detalhes do Pedido","-"*30,"\n")
+                
                 if usuario.tipo == 'Estabelecimento':
                     print(f"| {pedido.nome_cliente}")
                 if usuario.tipo == 'Cliente':
                     print(f"| {pedido.nome_loja}")
-                print(f"| #{pedido.id}".ljust(15), f"| Pedido {pedido.status_pedido}".ljust(20),f"| {pedido.data_pedido}\n")
+                    
+                print(f"| #{pedido.id}".ljust(15), f"| Pedido {pedido.status_pedido}".ljust(20),f"| Data/Horário: {pedido.data_horario_pedido}\n")
                 print("-"*60,"\n")
                 
                 self.total = 0
@@ -74,6 +74,7 @@ class Pedido:
                 print("\n","-"*60)    
                 print(f"\n| Valor total do pedido: R${self.total:0.2f}")
                 print(f"\n| Endereço de entrega: {self.endereco}") #### DESCOBRIR O PQ NÃO FUNCIONA COM pedido.endereco
+                
                 if usuario.tipo == 'Cliente' and self.avaliacao == None and pedido.status_pedido == 'Concluído':
                     
                     quer_avaliar = input('\nDeseja avaliar o seu pedido?\t(s/n)\n')
@@ -84,6 +85,7 @@ class Pedido:
                                                 SET avaliacao = ?
                                                 WHERE id = ?"""
                         cursor.execute(comando,self.avaliacao,pedido.id)
+                        cursor.commit()
                         time.sleep(3)
                         return True
                     if quer_avaliar == 'n':
@@ -92,14 +94,12 @@ class Pedido:
                 if self.avaliacao:
                         print(f"\n| Avaliação: {self.avaliacao}")
                 
-                
-
                 if usuario.tipo == 'Estabelecimento' and pedido.status_pedido == 'Pendente':
                         print("\n1 - Confirmar Pedido")
                         print("2 - Cancelar Pedido")
                         print("0 - Voltar")
                         
-                        confirma = input(f"\nDigite a opção desejada:\t")
+                        confirma = input("\nDigite a opção desejada:\t")
                         if confirma == '1':
                             certeza = input("Tem certeza que deseja confirmar o pedido? \t(s/n)\n")
                             if certeza == 's':
@@ -110,7 +110,7 @@ class Pedido:
                                 cursor.commit()
                                 return True
                         
-#                        cursor.execute(comando)
+                        #cursor.execute(comando)
                         if confirma == '2':
                             certeza = input("Tem certeza que deseja cancelar o pedido? \t(s/n)\n")
                             if certeza == 's':
@@ -129,10 +129,10 @@ class Pedido:
                     input('\n\nPressione ENTER para voltar\n')
                     return False
 
-        def historico_pedidos_cliente(self,cliente):
+        def historico_pedidos_cliente(self,cliente) -> None:
             while True:
                 cliente = cliente
-                consulta = """ SELECT DISTINCT id, status_pedido, nome_loja, data_pedido
+                consulta = """ SELECT DISTINCT id, status_pedido, nome_loja, data_horario_pedido
                                 FROM Pedidos
                                 WHERE cliente_id = ?; """ #consulta o banco de dados
                 cursor.execute(consulta, cliente.id) 
@@ -141,41 +141,52 @@ class Pedido:
                 for busca in tabela:
                     self.historico.append(busca)
                 
-                os.system('cls')
+                limpar_tela()
                 print("-"*30, f"Pedidos - {cliente.nome}", "-"*30)
 
                 if not self.historico:
-                    print(f'\n| Você ainda não realizou nenhum pedido!')
+                    print('\n| Você ainda não realizou nenhum pedido!')
                     print('\n',"-"*50)
                     input('\nPressione ENTER para voltar.')
                     return False
 
                 for p in self.historico:
-                    print(f"\n{p.data_pedido} ")
+                    data_formatada = p.data_horario_pedido[:10]
+                    print(f"\nData: {data_formatada} ")
                     print(f"{p.id} | Pedido {p.status_pedido} – {p.nome_loja}")
                     print('\n',"-"*50)
-                print("0 - Voltar")
-
+                print("\n0 - Voltar")
                 
-                nav = int(input("\nDigite o número do pedido que deseja visualizar: \t"))
+                a = 1    
+                while a:
+                    try:
+                        nav = int(input("\nDigite o número do pedido que deseja visualizar ou '0' para voltar: \t"))
+                    except ValueError:
+                        print("\n(Valor inválido!)")
+                        continue
+                        
+                    if nav == 0:
+                        a=0
+                        return False
+                    
+                    else:
+                        for p in self.historico:
+                            if nav == p.id:
+                                self.exibe_pedido(p,cliente)
+                                a=0
+                    print("\n(Valor inválido!)")
                 
-                for p in self.historico:
-                    if nav == p.id:
-                        self.exibe_pedido(p,cliente)
-                if nav == 0:
-                    return False
-                
-        def historico_pedidos_estabelecimento(self,estabelecimento,status):
+        def historico_pedidos_estabelecimento(self,estabelecimento,status) -> None:
             while True:
                 status = status
                 estabelecimento = estabelecimento
                 if status == 'Pendente':
-                    consulta = """ SELECT DISTINCT id, status_pedido, nome_cliente, data_pedido
+                    consulta = """ SELECT DISTINCT id, status_pedido, nome_cliente, data_horario_pedido
                                     FROM Pedidos
                                     WHERE loja_id = ? AND status_pedido = 'Pendente'; """ #consulta o banco de dados
 
                 if status == 'Finalizado':
-                    consulta = """ SELECT DISTINCT id, status_pedido, nome_cliente, data_pedido
+                    consulta = """ SELECT DISTINCT id, status_pedido, nome_cliente, data_horario_pedido
                                     FROM Pedidos
                                     WHERE loja_id = ? AND status_pedido != 'Pendente'; """ #consulta o banco de dados
                     
@@ -185,7 +196,7 @@ class Pedido:
                 for busca in tabela:
                     self.historico.append(busca)
                 
-                os.system('cls')
+                limpar_tela()
                 print("-"*30, f"Pedidos - {estabelecimento.nome}", "-"*30)
 
                 if not self.historico:
@@ -193,25 +204,36 @@ class Pedido:
                     print('\n',"-"*50)
                     input('\nPressione ENTER para voltar.')
                     return False
-                    
 
                 for p in self.historico:
-                    print(f"\n| {p.data_pedido} ")
+                    data_formatada = p.data_horario_pedido[:10]
+                    print(f"\nData: {data_formatada} ")
                     print(f"{p.id} | Pedido {p.status_pedido} – {p.nome_cliente}")
                     print('\n',"-"*50)
                 print("\n0 - Voltar")
-
-                nav = int(input("\nDigite o número do pedido que deseja visualizar: \t"))
                 
-                for p in self.historico:
-                    if nav == p.id:
-                        self.exibe_pedido(p,estabelecimento)
-                if nav == 0:
-                    return False
+                a = 1    
+                while a:
+                    try:
+                        nav = int(input("\nDigite o número do pedido que deseja visualizar ou '0' para voltar: \t"))
+                    except ValueError:
+                        print("\n(Valor inválido!)")
+                        continue
+                        
+                    if nav == 0:
+                        a=0
+                        return False
+                    
+                    else:
+                        for p in self.historico:
+                            if nav == p.id:
+                                self.exibe_pedido(p,estabelecimento)
+                                a=0
+                    print("\n(Valor inválido!)")
 
-            
-if __name__ == "__main__":
+#Main de teste:
+'''if __name__ == "__main__":
     nome = 'leon'
     pedido = Pedido(nome)
     
-    print(pedido.numero)
+    print(pedido.numero)'''
