@@ -1,76 +1,82 @@
-
 ####################### BANCO DE DADOS ######################
 
-from inspect import _void
 from Conex_SQL import connection
-
-
 
 cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis dentro do sql
 
 #############################################################
+
+import time
 from types import SimpleNamespace
-from Item import Item
 from Estabelecimento import Estabelecimento
 from Pedido import Pedido
-import time
 from Utilitarios import limpar_tela
-
+from Cliente import Cliente
 
 class Carrinho:
-    # Atributos e construtor da classe Carrinho
-    def __init__(self) -> None:            
+    
+    #Construtor
+    def __init__(self) -> None:
+         
         self.lista_carrinho = []
         self.cardapio = []
         self.total = 0
-    
 
-    def menu(self, estabelecimento,cliente):
-        cliente = cliente
+    def menu(self, estabelecimento:Estabelecimento, cliente:Cliente) -> bool:
+        
         veri = None
         while True:
             limpar_tela()
             estab_aux = Estabelecimento()
-            estabelecimento = estabelecimento
             veri = estab_aux.exibe_cardapio(estabelecimento)
             if veri == False:
                  return False
             self.convert_lista(estabelecimento)
             
+            print('\n1 - Adicionar Item ao Carrinho.')
+            print('2 - Remover Item do Carrinho.')
+            print('3 - Exibir Carrinho.')
+            print('4 - Limpar Carrinho.')
+            print('0 - Voltar.') 
             
-            print('\n1 - Adicionar Item ao Carrinho')
-            print('2 - Remover Item do Carrinho')
-            print('3 - Exibir Carrinho')
-            print('4 - Limpar Carrinho')
-            print('0 - Voltar') 
+            # Restrições para valores de entrada
+            a=1
+            while a:
+                opcao = None
+                opcao = input('\nDigite a opção desejada:\t')
+                if (opcao != '0' and opcao != '1' and opcao != '2' and opcao != '3' and opcao != '4'):
+                    print("\n(Entrada Inválida!)")
+                    time.sleep(2)
+                    break
+    
+                elif opcao == '1':
+                    self.add_carrinho(estabelecimento)
+                    a=0
+                
+                elif opcao == '2':
+                    self.remove_carrinho()
+                    a=0
+    
+                elif opcao == '3':
+                    a=0
+                    limpar_tela()
+                    confirma = False
+                    confirma = self.exibe_carrinho(cliente)
+                    if confirma == True:
+                        return True
+                    if confirma == False:
+                        pass
+    
+                elif opcao == '4':
+                    self.limpar()
+                    a=0
+    
+                elif opcao == '0':
+                    a=0
+                    return False
             
-            opcao = None
-            opcao = input('\nDigite a opção desejada:\t')
-
-            if opcao == '1':
-                self.add_carrinho(estabelecimento)
-            
-            if opcao == '2':
-                self.remove_carrinho()
-
-            if opcao == '3':
-                limpar_tela()
-                confirma = False
-                confirma = self.exibe_carrinho(estabelecimento, cliente)
-                if confirma == True:
-                    return True
-                if confirma == False:
-                    pass
-
-            if opcao == '4':
-                 self.limpar()
-
-            if opcao == '0':
-                 break
-            
-
-    def convert_lista(self,estabelecimento):
-        estabelecimento = estabelecimento
+    def convert_lista(self, estabelecimento:Estabelecimento) -> None:
+        
         consulta = """ SELECT * FROM Itens WHERE loja_id = ?; """ #consulta o banco de dados
         cursor.execute(consulta,estabelecimento.id) 
         tabela = cursor.fetchall()
@@ -88,123 +94,164 @@ class Carrinho:
             # Adiciona o objeto SimpleNamespace à lista custom_rows
             self.cardapio.append(row_namespace)
         
-         
-    
     #Método que recebe um item e o adiciona a lista de itens do carrinho
-    def add_carrinho(self,estabelecimento) -> None:
+    def add_carrinho(self, estabelecimento:Estabelecimento) -> None:
+        
+        # Restrições de entrada para o nome do produto que esteja no cardápio
+        nome_encontrado = 0
         nome = input('\nDigite o nome do produto a ser adicionado:\t')
-        qtd = int(input('\nDigite a quantidade de produtos a ser adicionado:\t'))
-                
+        for busca in self.cardapio:    #busca o código no cardápio
+            if nome == busca.nome:
+                nome_encontrado = 1
+        if nome_encontrado == 0:
+            print('\n(Nome Inválido!)')
+            time.sleep(2)
+            return
+            
+        # Restrições de entrada para a quantidade do produto
+        try:
+            qtd = int(input('\nDigite a quantidade do produto a ser adicionado:\t'))
+        except ValueError:
+            print('\n(Valor Inválido!)')
+            time.sleep(2)
+            return
+        if qtd <= 0:
+            print('\n(Valor Inválido!)')
+            time.sleep(2)
+            return
+            
         encontrado = False
         ok = True
-        for busca in self.cardapio:    #busca o código no cardápio
+        for busca in self.cardapio:   #busca o código no cardápio
             if nome == busca.nome:
                     for procura in self.lista_carrinho:   #busca o código no carrinho para não repetir o produto na lista, aumenta apenas a quantidade
                         
                         if procura.loja_id != busca.loja_id:
                              limpar_tela()
-                             print('| Você não pode selecionar itens de lojas diferentes')
-                             time.sleep(2)
+                             print('\n| Você não pode selecionar itens de lojas diferentes!')
+                             time.sleep(4)
                              ok = False
                              break
 
                         if nome == procura.nome and ok == True:
                             procura.quant += qtd
                             encontrado = True
-                    
-                    
-                            
-                    if not encontrado and ok == True:          #se não tiver o código no carrinho, agora ele tem condição de inserir todos os dados
+                            print('\n| Adicionado ao carrinho.')
+                            time.sleep(2.5)
+                                  
+                    if not encontrado and ok == True:   #se não tiver o código no carrinho, agora ele tem condição de inserir todos os dados
                         busca.estab_car = estabelecimento.nome
                         busca.quant = qtd
-                        self.lista_carrinho.append(busca)                
+                        self.lista_carrinho.append(busca)  
+                        print('\n| Adicionado ao carrinho.')
+                        time.sleep(2.5)
                         return self.convert_lista
         
     #Método que remove um item desejado (usando nome como critério) do carrinho
     def remove_carrinho(self) -> None:
+        
         if not self.lista_carrinho:
              print('\n| O carrinho está vazio!')
              time.sleep(3)
+             
         if self.lista_carrinho:
-            nome_item = input("\nDigite o nome do item a ser removido: ")
+            consulta = "SELECT nome FROM Itens"   #Consulta SQL
+            cursor.execute(consulta)   #Executa a consulta
+            resultados = cursor.fetchall()   #Recupera os resultados
+            nomes_dos_itens = [resultado[0] for resultado in resultados]   #Armazena os nomes na lista
+            
+            # Restrições de entrada para que o nome do item esteja no sql
+            nome_encontrado = 0
+            nome = input("\nDigite o nome do produto a ser removido:\t").strip()
+            if nome in nomes_dos_itens:
+                nome_encontrado = 1
+            elif nome_encontrado == 0:
+                print('\n(Nome Inválido!)')
+                time.sleep(2)
+                return
+            
+            # Verificação se o nome do produto está no carrinho
             item_encontrado = None
             for item in self.lista_carrinho:
-                if item.nome == nome_item:
+                if item.nome == nome:
                     item_encontrado = item
                     break
             if item_encontrado:
                 self.lista_carrinho.remove(item_encontrado)
-                print(f"\n| O item '{nome_item}' foi removido do carrinho.")
-                time.sleep(3)
+                print(f"\n| O item '{nome}' foi removido do carrinho.")
+                time.sleep(2.5)
             else:
-                print(f"\n| O item '{nome_item}' não foi encontrado no carrinho.")
+                print(f"\n| O item '{nome}' não foi encontrado no carrinho.")
                 time.sleep(3)
-    def limpar(self):
+                
+    def limpar(self) -> None:
+        
         if not self.lista_carrinho:
-             print('\n| O carrinho está vazio!')
-             time.sleep(3)
+            print('\n| O carrinho está vazio!')
+            time.sleep(3)
         if self.lista_carrinho:
             print('\n| Retirando os itens do carrinho...')
             time.sleep(3)
             self.lista_carrinho = []
     
     #Método que exibe as informações do carrinho, iten, número de itens, descrição de cada iten e valor total
-    def exibe_carrinho(self, estabelecimento, cliente) -> bool:
-        estabelecimento = estabelecimento
-        cliente = cliente
-        limpar_tela()
-        print('\n\n------------- CARRINHO -------------')
-        for p in self.lista_carrinho:
-             estab_car = p.estab_car
+    def exibe_carrinho(self, cliente:Cliente) -> bool:
         
-        if not self.lista_carrinho:
-             print('\n| Vazio!\n')
-             print('-'*36,'\n')
-             input('\nPressione ENTER para voltar.\t')
-             return False
-
-        
-        if self.lista_carrinho:
-            print(f"| {estab_car}")
-            print('-'*36,'\n')
-            self.total = 0
+        a = 1
+        while a:
+            limpar_tela()
+            print('\n\n------------- CARRINHO -------------')
             for p in self.lista_carrinho:
-                p.estab_id = estabelecimento.id
-                p.cliente_id = cliente.id
-                p.endereco = cliente.endereco
-                p.cliente_nome = cliente.nome
-                p.estab_nome = estabelecimento.nome
-
-                p.subtotal = p.quant * p.preco
-                print(f"| {p.nome} - R${p.preco:0.2f} x {p.quant} - R${p.subtotal:0.2f}")
+                 estab_car = p.estab_car
+            
+            if not self.lista_carrinho:
+                 print('\n| Vazio.\n')
+                 print('-'*36)
+                 input('\n\nPressione ENTER para voltar.\t')
+                 return False
+            
+            if self.lista_carrinho:
+                print(f"| {estab_car}")
+                print('-'*36,'\n')
+                self.total = 0
+                for p in self.lista_carrinho:
+                    p.estab_id = p.loja_id
+                    p.cliente_id = cliente.id
+                    p.endereco = cliente.endereco
+                    p.cliente_nome = cliente.nome
+                    p.estab_nome = p.estab_car
+    
+                    p.subtotal = p.quant * p.preco
+                    print(f"| {p.nome} - R${p.preco:0.2f} x {p.quant} - R${p.subtotal:0.2f}")
+                    
+                    self.total += p.subtotal
+                print('\n------------------------------------')    
+                print(f"\n| Valor total do carrinho: R${self.total:0.2f}")
                 
-                self.total += p.subtotal
-            print('\n------------------------------------')    
-            print(f"\n| Valor total do carrinho: R${self.total:0.2f}")
-            if estab_car != estabelecimento.nome:
-                input('\nPressione ENTER para voltar.\t')
-            if estab_car == estabelecimento.nome:
-                finalizar = input('\nDeseja finalizar o seu pedido?\t (s/n)\t')
+                # Restrições da entrada
+                finalizar = input('\n\nDeseja finalizar o seu pedido? (s/n):\t')
                 if finalizar == 's':
                         limpar_tela()
                         print('\n| Pedido enviado!')
-                        time.sleep(2.5)
+                        time.sleep(3)
                         self.finalizar_carrinho(cliente)
                         return True
-                        
-                elif 'n':
+                elif finalizar == 'n':
                         limpar_tela()
                         print("\n| Você pode revisar seu pedido!")
-                        time.sleep(2)
+                        time.sleep(3)
                         return False
+                else:
+                    print('\n(Entrada Inválida!)')
+                    time.sleep(2)
+                    
+    def finalizar_carrinho(self, cliente:Cliente) -> None:
+        
+        pedido_aux = Pedido()
+        pedido_aux.cria_pedido(self.lista_carrinho, cliente)
 
-    def finalizar_carrinho(self,cliente):
-        #  estabelecimento = estabelecimento
-         cliente = cliente
-         pedido_aux = Pedido()
-         pedido_aux.cria_pedido(self.lista_carrinho,cliente)
-
-if __name__ == "__main__":
+#Main de teste:
+'''if __name__ == "__main__":
             nome = 'Leon'
             carrinho = Carrinho(nome)
             
@@ -224,4 +271,4 @@ if __name__ == "__main__":
             carrinho.calcula_total()
             carrinho.remove_carrinho()
             carrinho.remove_carrinho()
-            carrinho.exibe_carrinho()
+            carrinho.exibe_carrinho()'''
