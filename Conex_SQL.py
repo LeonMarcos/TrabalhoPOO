@@ -10,6 +10,8 @@ servers = [
 ]
 
 # Função para tentar conectar aos servidores
+
+
 def connect_to_server(servers):
     connection = None
     for server in servers:
@@ -22,6 +24,6 @@ def connect_to_server(servers):
             print("Erro:", ex)
     return connection
 
+
 # Tentar conectar aos servidores
 connection = connect_to_server(servers)
-
