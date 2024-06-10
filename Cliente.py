@@ -16,7 +16,7 @@ class Cliente(Usuario):
     # Regex para garantir que o telefone tenha exatamente 11 dígitos
     padrao_telefone = r"^\d{11}$"
     # Regex para garantir que o nome só contenha letras e espaços
-    padrao_nome = r"^[a-zA-Z ]+$"
+    padrao_nome = r"^[a-zA-ZÀ-ÿ ]+$"
     # Regex para garantir que o cpf tenha exatamente 11 dígitos
     padrao_cpf = r"^\d{11}$"
 

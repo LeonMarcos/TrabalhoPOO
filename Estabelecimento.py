@@ -21,7 +21,7 @@ class Estabelecimento(Usuario):
     # Regex para garantir que o telefone tenha exatamente 11 dígitos
     padrao_telefone = r"^\d{11}$"
     # Regex para garantir que o nome só contenha letras e espaços
-    padrao_nome = r"^[a-zA-Z ]+$"
+    padrao_nome = r"^[a-zA-ZÀ-ÿ ]+$"
     # Regex para garantir que o cnpj tenha exatamente 14 dígitos
     padrao_cnpj = r"^\d{14}$"
 
@@ -294,7 +294,8 @@ class Estabelecimento(Usuario):
                 print("-"*100)
                 numero = numero + 1
                 # Lista de caracteres a serem impressos
-                print(numero, f"   {item_cardapio.nome}".ljust(30), f"{item_cardapio.descricao}".ljust(33), f"R${item_cardapio.preco:.2f}")
+                print(numero, f"   {item_cardapio.nome}".ljust(30), f"{
+                      item_cardapio.descricao}".ljust(33), f"R${item_cardapio.preco:.2f}")
             print("-"*100)
             break
 
