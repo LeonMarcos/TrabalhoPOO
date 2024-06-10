@@ -294,8 +294,7 @@ class Estabelecimento(Usuario):
                 print("-"*100)
                 numero = numero + 1
                 # Lista de caracteres a serem impressos
-                print(numero, f"   {item_cardapio.nome}".ljust(30), f"{
-                      item_cardapio.descricao}".ljust(33), f"R${item_cardapio.preco:.2f}")
+                print(numero, f"   {item_cardapio.nome}".ljust(30), f"{item_cardapio.descricao}".ljust(33), f"R${item_cardapio.preco:.2f}")
             print("-"*100)
             break
 
