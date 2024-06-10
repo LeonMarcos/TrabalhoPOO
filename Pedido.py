@@ -15,9 +15,10 @@ from Utilitarios import limpar_tela
 from Usuario import Usuario
 
 class Pedido:
-        
-        def __init__(self) -> None: #Construtor
-        
+    
+        #Construtor
+        def __init__(self) -> None:
+            
             data_hora_atual = datetime.datetime.now() #Obtém a data e a hora atuais
             data_hora_formatada = data_hora_atual.strftime("%d/%m/%Y às %H:%M:%S") #Formata a data e a hora no formato desejado
             
@@ -43,7 +44,8 @@ class Pedido:
         
         def exibe_pedido(self, id_pedido:int, usuario:Usuario) -> None:
             
-            while True:
+            a=1
+            while a:
                 consulta = """ SELECT * FROM Pedidos
                                 WHERE id = ? """ #consulta o banco de dados
                 cursor.execute(consulta, id_pedido)
@@ -82,40 +84,43 @@ class Pedido:
                 
                 if usuario.tipo == 'Cliente' and self.avaliacao == None and pedido.status_pedido == 'Concluído':
                     
-                    a=1
-                    while a:
-                        quer_avaliar = input('\nDeseja avaliar o seu pedido? (s/n):\t')
-                        if (quer_avaliar != 's' and quer_avaliar != 'n'):
+                    # Restrições de entrada
+                    quer_avaliar = input('\n\nDeseja avaliar o seu pedido? (s/n):\t')
+                    if (quer_avaliar != 's' and quer_avaliar != 'n'):
+                        print("\n(Entrada Inválida!)")
+                        time.sleep(2)
+                        continue                   
+                
+                    elif quer_avaliar == 's':
+                        
+                        # Restrições de entrada
+                        try:
+                            self.avaliacao = int(input('\nAvalie o seu pedido com uma nota de 1 a 5:\t'))
+                        except ValueError:
                             print("\n(Entrada Inválida!)")
-                            continue                   
-                    
-                        elif quer_avaliar == 's':
-                            b=1
-                            while b:
-                                try:
-                                    self.avaliacao = int(input('\nAvalie o seu pedido com uma nota de 1 a 5:\t'))
-                                except ValueError:
-                                    print("\n(Entrada Inválida!)")
-                                    continue
-                                
-                                if (self.avaliacao < 1 or self.avaliacao > 5):
-                                    print("\n(Entrada Inválida!)")
-                                    continue                                    
-                                
-                                print(f"\nVocê avaliou este pedido com nota {self.avaliacao}. Seu feedback é muito importante pra gente!")
-                                comando = """ UPDATE Pedidos
-                                                        SET avaliacao = ?
-                                                        WHERE id = ?"""
-                                cursor.execute(comando,self.avaliacao,pedido.id)
-                                cursor.commit()
-                                time.sleep(3)
-                                a=0
-                                return True
-                        elif quer_avaliar == 'n':
-                            print('\n| Seu feedback é importante, considere avaliar o seu pedido mais tarde!')
-                            time.sleep(3)
-                            a=0
-                            return True
+                            time.sleep(2)
+                            continue
+                        
+                        if (self.avaliacao < 1 or self.avaliacao > 5):
+                            print("\n(Entrada Inválida!)")
+                            time.sleep(2)
+                            continue                                    
+                        
+                        print(f"\nVocê avaliou este pedido com nota {self.avaliacao}. Seu feedback é muito importante pra gente!")
+                        comando = """ UPDATE Pedidos
+                                                SET avaliacao = ?
+                                                WHERE id = ?"""
+                        cursor.execute(comando,self.avaliacao,pedido.id)
+                        cursor.commit()
+                        time.sleep(3)
+                        a=0
+                        continue
+                    elif quer_avaliar == 'n':
+                        print('\n| Seu feedback é importante, considere avaliar o seu pedido mais tarde!')
+                        time.sleep(3)
+                        a=0
+                        continue
+                        
                 if self.avaliacao:
                         print(f"\n| Avaliação: {self.avaliacao}")
                 
@@ -124,71 +129,68 @@ class Pedido:
                         print("2 - Cancelar Pedido.")
                         print("0 - Voltar.")
                         
-                        c=1
-                        while c:
-                            confirma = input("\nDigite a opção desejada:\t")
-                            if (confirma != '0' and confirma != '1' and confirma != '2'):
-                                print("\n(Entrada Inválida!)")
-                                continue
-                            
-                            elif confirma == '1':
-                                d=1
-                                while d:
-                                    certeza = input("\nTem certeza que deseja confirmar o pedido? (s/n):\t")
-                                    if (certeza != 's' and certeza != 'n'):
-                                        print("\n(Entrada Inválida!)")
-                                        continue
-                                    elif certeza == 's':
-                                        self.status = 'Concluído'
-                                        comando = """ UPDATE Pedidos
-                                                        SET status_pedido = ?
-                                                        WHERE id = ?;"""
-                                        cursor.execute(comando,self.status,pedido.id)
-                                        cursor.commit()
-                                        d=0
-                                        c=0
-                                        limpar_tela()
-                                        print('\n| Pedido confirmado!')
-                                        time.sleep(2.5)
-                                        return True
-                                    elif certeza == 'n':
-                                        d=0
+                        # Restrições de entrada
+                        confirma = input("\nDigite a opção desejada:\t")
+                        if (confirma != '0' and confirma != '1' and confirma != '2'):
+                            print("\n(Entrada Inválida!)")
+                            time.sleep(2)
+                            continue  
                         
-                            elif confirma == '2':
-                                e=1
-                                while e:
-                                    certeza = input("\nTem certeza que deseja cancelar o pedido? (s/n):\t")
-                                    if (certeza != 's' and certeza != 'n'):
-                                        print("\n(Entrada Inválida!)")
-                                        continue
-                                    elif certeza == 's':
-                                        self.status = 'Cancelado'                          
-                                        comando = """ UPDATE Pedidos
-                                                        SET status_pedido = ?
-                                                        WHERE id = ?;"""
-                                        cursor.execute(comando,self.status,pedido.id)
-                                        cursor.commit()
-                                        c=0
-                                        e=0
-                                        limpar_tela()
-                                        print('\n| Pedido cancelado!')
-                                        time.sleep(2.5)
-                                        return True
-                                    elif certeza == 'n':
-                                        e=0
+                        elif confirma == '1':
                             
-                            elif confirma == '0':
-                                c=0
-                                return False
+                            # Restrições de entrada
+                            certeza = input("\nTem certeza que deseja confirmar o pedido? (s/n):\t")
+                            if (certeza != 's' and certeza != 'n'):
+                                print("\n(Entrada Inválida!)")
+                                time.sleep(2)
+                                continue
+                            elif certeza == 's':
+                                self.status = 'Concluído'
+                                comando = """ UPDATE Pedidos
+                                                SET status_pedido = ?
+                                                WHERE id = ?;"""
+                                cursor.execute(comando,self.status,pedido.id)
+                                cursor.commit()
+                                print('\n| Pedido confirmado!')
+                                time.sleep(3)
+                                a=0
+                                continue
+                            elif certeza == 'n':
+                                continue
+                    
+                        elif confirma == '2':
                             
-                            pass
+                            # Restrições de entrada
+                            certeza = input("\nTem certeza que deseja cancelar o pedido? (s/n):\t")
+                            if (certeza != 's' and certeza != 'n'):
+                                print("\n(Entrada Inválida!)")
+                                time.sleep(2)
+                                continue
+                            elif certeza == 's':
+                                self.status = 'Cancelado'                          
+                                comando = """ UPDATE Pedidos
+                                                SET status_pedido = ?
+                                                WHERE id = ?;"""
+                                cursor.execute(comando,self.status,pedido.id)
+                                cursor.commit()
+                                print('\n| Pedido cancelado!')
+                                time.sleep(3)
+                                a=0
+                                continue
+                            elif certeza == 'n':
+                                continue
+                        
+                        elif confirma == '0':
+                            a=0                        
+                        pass
                 else:
                     input('\n\nPressione ENTER para voltar.\t')
-                    return False
+                    a = 0
 
         def historico_pedidos_cliente(self, cliente:Cliente) -> None:
             
-            while True:
+            a=1
+            while a:
                 consulta = """ SELECT DISTINCT id, status_pedido, nome_loja, data_horario_pedido
                                 FROM Pedidos
                                 WHERE cliente_id = ?; """ #consulta o banco de dados
@@ -202,10 +204,10 @@ class Pedido:
                 print("-"*30, f"Pedidos - {cliente.nome}", "-"*30)
 
                 if not self.historico:
-                    print('\n| Você ainda não realizou nenhum pedido!')
+                    print('\n| Você ainda não realizou nenhum pedido.')
                     print('\n',"-"*50)
                     input('\n\nPressione ENTER para voltar.\t')
-                    return False
+                    return
 
                 for p in self.historico:
                     data_formatada = p.data_horario_pedido[:10]
@@ -214,28 +216,31 @@ class Pedido:
                     print('\n',"-"*50)
                 print("\n0 - Voltar.")
                 
-                a = 1    
-                while a:
-                    try:
-                        nav = int(input("\nDigite o número do pedido que deseja visualizar ou '0' para voltar: \t"))
-                    except ValueError:
-                        print("\n(Entrada Inválida!)")
-                        continue
-                        
-                    if nav == 0:
-                        a=0
-                        return False
-                    
-                    else:
-                        for p in self.historico:
-                            if nav == p.id:
-                                self.exibe_pedido(nav,cliente)
-                                a=0
+                # Restrições de entrada
+                try:
+                    nav = int(input("\nDigite o número do pedido que deseja visualizar ou '0' para voltar: \t"))
+                except ValueError:
                     print("\n(Entrada Inválida!)")
+                    time.sleep(2)
+                    continue
+                
+                if nav == 0:
+                    a = 0
+                    continue
+                
+                n_encontrado=1
+                for p in self.historico:
+                    if nav == p.id:
+                        self.exibe_pedido(nav,cliente)
+                        n_encontrado = 0
+                if n_encontrado:
+                    print("\n(Entrada Inválida!)")
+                    time.sleep(2)
                 
         def historico_pedidos_estabelecimento(self, estabelecimento:Estabelecimento, status:str) -> None:
             
-            while True:
+            a=1
+            while a:
                 if status == 'Pendente':
                     consulta = """ SELECT DISTINCT id, status_pedido, nome_cliente, data_horario_pedido
                                     FROM Pedidos
@@ -256,10 +261,10 @@ class Pedido:
                 print("-"*30, f"Pedidos - {estabelecimento.nome}", "-"*30)
 
                 if not self.historico:
-                    print(f'\n| No momento não existem pedidos {status}s!')
+                    print(f'\n| No momento não existem pedidos {status}s.')
                     print('\n',"-"*50)
                     input('\n\nPressione ENTER para voltar.\t')
-                    return False
+                    return
 
                 for p in self.historico:
                     data_formatada = p.data_horario_pedido[:10]
@@ -268,24 +273,26 @@ class Pedido:
                     print('\n',"-"*50)
                 print("\n0 - Voltar.")
                 
-                a = 1    
-                while a:
-                    try:
-                        nav = int(input("\nDigite o número do pedido que deseja visualizar ou '0' para voltar: \t"))
-                    except ValueError:
-                        print("\n(Entrada Inválida!)")
-                        continue
-                        
-                    if nav == 0:
-                        a=0
-                        return False
-                    
-                    else:
-                        for p in self.historico:
-                            if nav == p.id:
-                                self.exibe_pedido(nav,estabelecimento)
-                                a=0
+                # Restrições de entrada
+                try:
+                    nav = int(input("\nDigite o número do pedido que deseja visualizar ou '0' para voltar: \t"))
+                except ValueError:
                     print("\n(Entrada Inválida!)")
+                    time.sleep(2)
+                    continue
+                    
+                if nav == 0:
+                    a = 0
+                    continue
+                
+                n_encontrado=1
+                for p in self.historico:
+                    if nav == p.id:
+                        self.exibe_pedido(nav,estabelecimento)
+                        n_encontrado = 0
+                if n_encontrado:
+                    print("\n(Entrada Inválida!)")
+                    time.sleep(2)
 
 #Main de teste:
 '''if __name__ == "__main__":
