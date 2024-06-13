@@ -1,20 +1,16 @@
-
-
 ####################### BANCO DE DADOS ######################
 
-import re
-from Utilitarios import limpar_tela
-import time
-from Item import Item
-from Usuario import Usuario
 from Conex_SQL import connection
 
-
-# utiliza-se o cursor para apontar para as variaveis dentro do sql
-cursor = connection.cursor()
+cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis dentro do sql
 
 #############################################################
 
+import re
+import time
+from Utilitarios import limpar_tela, limpar_texto
+from Usuario import Usuario
+from Item import Item
 
 class Estabelecimento(Usuario):
     # Constantes
@@ -152,7 +148,7 @@ class Estabelecimento(Usuario):
             print("\nEscolha o atributo a ser atualizado:")
             for key, value in atributos.items():
                 print(f"{key}. {value}")
-            escolha = input("Digite o número do atributo (ou '0' para sair): ")
+            escolha = input("\nDigite o número do atributo (ou '0' para sair):\t")
             if escolha == '0':
                 break
             elif escolha in atributos:
@@ -230,43 +226,7 @@ class Estabelecimento(Usuario):
             else:
                 print("Escolha inválida. Por favor, tente novamente.")
 
-    # Método que verifica se um item já existeno cardapio. Se o item existir, retorna True.
-    def __verifica_item_cardapio(self, nome_item, estabelecimento: str) -> bool:
-        estabelecimento = estabelecimento
-        nome_item = nome_item
-        consulta = """ SELECT * FROM Itens WHERE loja_id = ?; """  # consulta o banco de dados
-        cursor.execute(consulta, estabelecimento.id)
-        tabela = cursor.fetchall()
-        self.__cardapio = []
-        for busca in tabela:
-            self.__cardapio.append(busca)
-
-        for procura in self.__cardapio:
-            if procura.nome == nome_item:
-                return True
-
-        return False
-
-    # Método que cadastra item no cardápio. O método só cadas um item no cadárpio caso ele seja novo.
-    def cadastra_item(self, estabelecimento) -> None:
-        estabelecimento = estabelecimento
-        item = Item()
-        # Os itens só podem ser criados dentro dessa função.
-        item.cria_item(estabelecimento)
-        nome_item = item.nome
-        if not self.__verifica_item_cardapio(nome_item, estabelecimento):
-            comando = """ INSERT INTO Itens(nome, descricao, preco, loja_id)
-            VALUES
-              (?, ?, ?, ?)"""
-            cursor.execute(comando, item.nome, item.descricao,
-                           item.preco, item.loja_id)
-            cursor.commit()
-
-            print("\nItem cadastrado com sucesso!")
-            time.sleep(2)
-        else:
-            print("\nEste item já possui cadastrado.")
-            time.sleep(2)
+    
 
     # Método que exibe os itens cadastrados no cardápio.
     def exibe_cardapio(self, estabelecimento) -> None:
@@ -294,37 +254,165 @@ class Estabelecimento(Usuario):
                 print("-"*100)
                 numero = numero + 1
                 # Lista de caracteres a serem impressos
-                print(numero, f"   {item_cardapio.nome}".ljust(30), f"{
-                      item_cardapio.descricao}".ljust(33), f"R${item_cardapio.preco:.2f}")
+                print(numero, f"   {item_cardapio.nome}".ljust(30), f"{item_cardapio.descricao}".ljust(33), f"R${item_cardapio.preco:.2f}")
             print("-"*100)
             break
+        
+    # Método que cadastra item no cardápio.
+    def cadastra_item(self, estabelecimento) -> None:
+        
+        item = Item()
+        # Os itens só podem ser criados dentro dessa função.
+        retorno = item.cria_item(estabelecimento)
+        if retorno == False:
+            return
+        comando = """ INSERT INTO Itens(nome, descricao, preco, loja_id)
+        VALUES
+          (?, ?, ?, ?)"""
+        cursor.execute(comando, item.nome, item.descricao,
+                       item.preco, item.loja_id)
+        cursor.commit()
+
+        print("\n| Produto cadastrado com sucesso!")
+        time.sleep(2.5) 
 
     # Método que remove um item desejado do cardápio com base no nome.
-
     def remove_item_cardapio(self) -> None:
-        nome_item = input("\nDigite o nome do item a ser removido: ")
+            
+        nome_item = input("\nDigite o nome do item a ser removido:\t")
+        nome_limpo = limpar_texto(nome_item)
+        
+        # Buscar item no cardápio
         item_encontrado = None
         for item in self.__cardapio:
-            if item.nome == nome_item:
+            if limpar_texto(item.nome) == nome_limpo:
                 item_encontrado = item
                 break
+            
         if item_encontrado:
-            self.__cardapio.remove(item_encontrado)
-            print(f"O item '{nome_item}' foi removido com sucesso!")
+            # Restrições de entrada
+            certeza = input(f"\nTem certeza que deseja remover '{item_encontrado.nome}' do cardápio? (s/n):\t")
+            certeza_limpo = limpar_texto(certeza)
+            if (certeza_limpo != 's' and certeza_limpo != 'n'):
+                print("\n(Entrada Inválida!)")
+                time.sleep(2)
+                return
+            elif certeza_limpo == 's':
+                # Consulta SQL para deletar o item com o nome e loja especificados
+                consulta = "DELETE FROM Itens WHERE nome = ? AND loja_id = ?"
+                # Executa a consulta
+                cursor.execute(consulta, (item_encontrado.nome, item_encontrado.loja_id))
+                # Deleta o item no banco de dados
+                cursor.commit()
+
+                print(f"\n| '{item_encontrado.nome}' foi removido com sucesso!")
+                time.sleep(3)
+                return
+            elif certeza_limpo == 'n':
+                return  
         else:
-            print(f"O item '{nome_item}' não foi encontrado no cardápio.")
-
-    # método que retorna um item escolhido do cardápio
-    def escolhe_item(self) -> 'Item':
-        nome_item = input("\nDigite o nome do item que deseja escolher: ")
+            print('\n(Nome Inválido!)')
+            time.sleep(2)
+            return
+            
+    def altera_item_cardapio(self) -> None:
+        
+        nome_item = input("\nDigite o nome do item a ser alterado:\t")
+        nome_limpo = limpar_texto(nome_item)
+        
+        item_encontrado = None
         for item in self.__cardapio:
-            if item.nome == nome_item:
-                return item
-        print(f"\nO item '{nome_item}' não foi encontrado no cardápio.")
-        return None
+            if limpar_texto(item.nome) == nome_limpo:
+                item_encontrado = item
+                break
+            
+        if item_encontrado:
+            a=1
+            while a:
+                limpar_tela()
+                print('\n\n------------- Altera Item -------------')
+                print('\n\n1 - Nome: {item_encontrado.nome}')
+                print('2 - Descrição: {item_encontrado.descricao}')
+                print('3 - Preço: {item_encontrado.preco}')
+                
+                escolha = input('\nQual atributo deseja modificar? (1, 2 ou 3):\t')
+                escolha_limpo = limpar_texto(escolha)
+                
+                if (escolha_limpo != '1' or escolha_limpo != '2' or escolha_limpo != '3'):
+                    print("\n(Entrada Inválida!)")
+                    time.sleep(2)
+                    continue
+                
+                if escolha_limpo == '1':
+                    
+                    consulta = "SELECT nome FROM Itens WHERE loja_id = ?"   #Consulta SQL
+                    cursor.execute(consulta, (estabelecimento.id,))   #Executa a consulta
+                    resultados = cursor.fetchall()   #Recupera os resultados
+                    nomes_dos_itens = [resultado[0] for resultado in resultados]   #Armazena os nomes na lista
+                    
+                    self.nome = input("\nNome do novo produto:\t")     
+                    novo_nome_limpo = limpar_texto(self.nome)
+                    nomes_dos_itens_limpo = [limpar_texto(nome) for nome in nomes_dos_itens]
+                    
+                    # Restrição de nome do produto já existente
+                    if novo_nome_limpo in nomes_dos_itens_limpo:
+                        print('\n| Nome já existente. Por favor, digite outro nome.')
+                        time.sleep(3)
+                        continue
+                
+                elif escolha_limpo == '2':
+                    nova_descricao = input("\nDescrição do novo produto:\t")
+                
+                elif escolha_limpo == '3':
+                    try:
+                        preco_str = input("\nPreço do novo produto:\tR$")
+                        # Substitui ',' por '.' para permitir ambas as entradas
+                        preco_str = preco_str.replace(',', '.')
+                        preco = float(preco_str)
+                    except ValueError:
+                        print("\n(Valor Inválido!)")
+                        time.sleep(2)
+                        continue
+                    
+                
+                else:
+                    print("\n(Entrada Inválida!)")
+                    time.sleep(2)
+                    continue
+                    
+                
+                
+                      
+                
+                
+                
+            # Restrições de entrada
+            certeza = input(f"\nTem certeza que deseja remover '{item_encontrado.nome}' do cardápio? (s/n):\t")
+            certeza_limpo = limpar_texto(certeza)
+            if (certeza_limpo != 's' and certeza_limpo != 'n'):
+                print("\n(Entrada Inválida!)")
+                time.sleep(2)
+                return
+            elif certeza_limpo == 's':
+                # Consulta SQL para deletar o item com o nome e loja especificados
+                consulta = "DELETE FROM Itens WHERE nome = ? AND loja_id = ?"
+                # Executa a consulta
+                cursor.execute(consulta, (item_encontrado.nome, item_encontrado.loja_id))
+                # Deleta o item no banco de dados
+                cursor.commit()
 
+                print(f"\n| '{item_encontrado.nome}' foi removido com sucesso!")
+                time.sleep(3)
+                return
+            elif certeza_limpo == 'n':
+                return  
+        else:
+            print('\n(Nome Inválido!)')
+            time.sleep(2)
+            return
 
-if __name__ == "__main__":
+#Main de teste:
+'''if __name__ == "__main__":
     estabelecimentoum = Estabelecimento()
     estabelecimentoum.cria_Usuario()
     print("\n")
@@ -341,4 +429,4 @@ if __name__ == "__main__":
     estabelecimentoum.cadastra_item(estabelecimentoum)
     estabelecimentoum.exibe_cardapio(estabelecimentoum)
     estabelecimentoum.remove_item_cardapio()
-    estabelecimentoum.exibe_cardapio(estabelecimentoum)
+    estabelecimentoum.exibe_cardapio(estabelecimentoum)'''

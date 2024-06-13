@@ -219,6 +219,15 @@ class Cliente(Usuario):
 
         # self.tipo = self.__class__.__name__
         limpar_tela()
+        
+    # método que retorna um item escolhido do cardápio
+    def escolhe_item(self) -> str:
+        nome_item = input("\nDigite o nome do item que deseja escolher: ")
+        for item in self.__cardapio:
+            if item.nome == nome_item:
+                return item
+        print(f"\nO item '{nome_item}' não foi encontrado no cardápio.")
+        return None    
 
 
 if __name__ == "__main__":

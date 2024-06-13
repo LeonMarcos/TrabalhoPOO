@@ -1,5 +1,3 @@
-
-
 import pyodbc
 
 # Lista de strings de conexão para os diferentes servidores
@@ -7,6 +5,7 @@ servers = [
     r"Driver={SQL Server};Server=localhost\SQLEXPRESS;Database=UFMGFood;",
     r"Driver={SQL Server};LAPTOP-AISSTUU7\SQLEXPRESS;Database=UFMGFood;",
     r"Driver={SQL Server};Server=LEON;Database=UFMGFood;"
+    r"Driver={SQL Server};Server=GGR;Database=UFMGFood;"
 ]
 
 # Função para tentar conectar aos servidores

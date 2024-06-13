@@ -11,7 +11,7 @@ import datetime
 from typing import List, Any
 from Cliente import Cliente
 from Estabelecimento import Estabelecimento
-from Utilitarios import limpar_tela
+from Utilitarios import limpar_tela, limpar_texto
 from Usuario import Usuario
 
 class Pedido:
@@ -86,12 +86,13 @@ class Pedido:
                     
                     # Restrições de entrada
                     quer_avaliar = input('\n\nDeseja avaliar o seu pedido? (s/n):\t')
-                    if (quer_avaliar != 's' and quer_avaliar != 'n'):
+                    quer_avaliar_limpo = limpar_texto(quer_avaliar)
+                    if (quer_avaliar_limpo != 's' and quer_avaliar_limpo != 'n'):
                         print("\n(Entrada Inválida!)")
                         time.sleep(2)
                         continue                   
                 
-                    elif quer_avaliar == 's':
+                    elif quer_avaliar_limpo == 's':
                         
                         # Restrições de entrada
                         try:
@@ -115,7 +116,7 @@ class Pedido:
                         time.sleep(3)
                         a=0
                         continue
-                    elif quer_avaliar == 'n':
+                    elif quer_avaliar_limpo == 'n':
                         print('\n| Seu feedback é importante, considere avaliar o seu pedido mais tarde!')
                         time.sleep(3)
                         a=0
@@ -131,20 +132,22 @@ class Pedido:
                         
                         # Restrições de entrada
                         confirma = input("\nDigite a opção desejada:\t")
-                        if (confirma != '0' and confirma != '1' and confirma != '2'):
+                        confirma_limpo = limpar_texto(confirma)
+                        if (confirma_limpo != '0' and confirma_limpo != '1' and confirma_limpo != '2'):
                             print("\n(Entrada Inválida!)")
                             time.sleep(2)
                             continue  
                         
-                        elif confirma == '1':
+                        elif confirma_limpo == '1':
                             
                             # Restrições de entrada
                             certeza = input("\nTem certeza que deseja confirmar o pedido? (s/n):\t")
-                            if (certeza != 's' and certeza != 'n'):
+                            certeza_limpo = limpar_texto(certeza)
+                            if (certeza_limpo != 's' and certeza_limpo != 'n'):
                                 print("\n(Entrada Inválida!)")
                                 time.sleep(2)
                                 continue
-                            elif certeza == 's':
+                            elif certeza_limpo == 's':
                                 self.status = 'Concluído'
                                 comando = """ UPDATE Pedidos
                                                 SET status_pedido = ?
@@ -155,18 +158,19 @@ class Pedido:
                                 time.sleep(3)
                                 a=0
                                 continue
-                            elif certeza == 'n':
+                            elif certeza_limpo == 'n':
                                 continue
                     
-                        elif confirma == '2':
+                        elif confirma_limpo == '2':
                             
                             # Restrições de entrada
                             certeza = input("\nTem certeza que deseja cancelar o pedido? (s/n):\t")
-                            if (certeza != 's' and certeza != 'n'):
+                            certeza_limpo = limpar_texto(certeza)
+                            if (certeza_limpo != 's' and certeza_limpo != 'n'):
                                 print("\n(Entrada Inválida!)")
                                 time.sleep(2)
                                 continue
-                            elif certeza == 's':
+                            elif certeza_limpo == 's':
                                 self.status = 'Cancelado'                          
                                 comando = """ UPDATE Pedidos
                                                 SET status_pedido = ?
@@ -177,10 +181,10 @@ class Pedido:
                                 time.sleep(3)
                                 a=0
                                 continue
-                            elif certeza == 'n':
+                            elif certeza_limpo == 'n':
                                 continue
                         
-                        elif confirma == '0':
+                        elif confirma_limpo == '0':
                             a=0                        
                         pass
                 else:
@@ -218,7 +222,7 @@ class Pedido:
                 
                 # Restrições de entrada
                 try:
-                    nav = int(input("\nDigite o número do pedido que deseja visualizar ou '0' para voltar: \t"))
+                    nav = int(input("\nDigite o número do pedido que deseja visualizar (ou '0' para voltar):\t"))
                 except ValueError:
                     print("\n(Entrada Inválida!)")
                     time.sleep(2)
@@ -275,7 +279,7 @@ class Pedido:
                 
                 # Restrições de entrada
                 try:
-                    nav = int(input("\nDigite o número do pedido que deseja visualizar ou '0' para voltar: \t"))
+                    nav = int(input("\nDigite o número do pedido que deseja visualizar (ou '0' para voltar):\t"))
                 except ValueError:
                     print("\n(Entrada Inválida!)")
                     time.sleep(2)

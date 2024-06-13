@@ -10,7 +10,7 @@ import time
 from types import SimpleNamespace
 from Estabelecimento import Estabelecimento
 from Pedido import Pedido
-from Utilitarios import limpar_tela
+from Utilitarios import limpar_tela, limpar_texto
 from Cliente import Cliente
 
 class Carrinho:
@@ -44,20 +44,21 @@ class Carrinho:
             while a:
                 opcao = None
                 opcao = input('\nDigite a opção desejada:\t')
-                if (opcao != '0' and opcao != '1' and opcao != '2' and opcao != '3' and opcao != '4'):
+                opcao_limpa = limpar_texto(opcao)
+                if (opcao_limpa != '0' and opcao_limpa != '1' and opcao_limpa != '2' and opcao_limpa != '3' and opcao_limpa != '4'):
                     print("\n(Entrada Inválida!)")
                     time.sleep(2)
                     break
     
-                elif opcao == '1':
+                elif opcao_limpa == '1':
                     self.add_carrinho(estabelecimento)
                     a=0
                 
-                elif opcao == '2':
+                elif opcao_limpa == '2':
                     self.remove_carrinho()
                     a=0
     
-                elif opcao == '3':
+                elif opcao_limpa == '3':
                     a=0
                     limpar_tela()
                     confirma = False
@@ -67,11 +68,11 @@ class Carrinho:
                     if confirma == False:
                         pass
     
-                elif opcao == '4':
+                elif opcao_limpa == '4':
                     self.limpar()
                     a=0
     
-                elif opcao == '0':
+                elif opcao_limpa == '0':
                     a=0
                     return False
             
@@ -100,8 +101,10 @@ class Carrinho:
         # Restrições de entrada para o nome do produto que esteja no cardápio
         nome_encontrado = 0
         nome = input('\nDigite o nome do produto a ser adicionado:\t')
+        nome_limpo = limpar_texto(nome)
+        
         for busca in self.cardapio:    #busca o código no cardápio
-            if nome == busca.nome:
+            if nome_limpo == limpar_texto(busca.nome):
                 nome_encontrado = 1
         if nome_encontrado == 0:
             print('\n(Nome Inválido!)')
@@ -123,7 +126,7 @@ class Carrinho:
         encontrado = False
         ok = True
         for busca in self.cardapio:   #busca o código no cardápio
-            if nome == busca.nome:
+            if nome_limpo == limpar_texto(busca.nome):
                     for procura in self.lista_carrinho:   #busca o código no carrinho para não repetir o produto na lista, aumenta apenas a quantidade
                         
                         if procura.loja_id != busca.loja_id:
@@ -133,7 +136,7 @@ class Carrinho:
                              ok = False
                              break
 
-                        if nome == procura.nome and ok == True:
+                        if nome_limpo == limpar_texto(procura.nome) and ok == True:
                             procura.quant += qtd
                             encontrado = True
                             print('\n| Adicionado ao carrinho.')
@@ -162,8 +165,12 @@ class Carrinho:
             
             # Restrições de entrada para que o nome do item esteja no sql
             nome_encontrado = 0
-            nome = input("\nDigite o nome do produto a ser removido:\t").strip()
-            if nome in nomes_dos_itens:
+            nome = input("\nDigite o nome do produto a ser removido:\t")
+            nome_limpo = limpar_texto(nome)
+            
+            nomes_dos_itens_limpo = [limpar_texto(nome) for nome in nomes_dos_itens]
+            
+            if nome_limpo in nomes_dos_itens_limpo:
                 nome_encontrado = 1
             elif nome_encontrado == 0:
                 print('\n(Nome Inválido!)')
@@ -173,15 +180,35 @@ class Carrinho:
             # Verificação se o nome do produto está no carrinho
             item_encontrado = None
             for item in self.lista_carrinho:
-                if item.nome == nome:
+                if limpar_texto(item.nome) == nome_limpo:
                     item_encontrado = item
                     break
             if item_encontrado:
-                self.lista_carrinho.remove(item_encontrado)
-                print(f"\n| O item '{nome}' foi removido do carrinho.")
-                time.sleep(2.5)
+                # Restrições de entrada dos valores para quantidades a serem removidas
+                try:
+                    qtd = int(input('\nDigite a quantidade do produto a ser removido:\t'))
+                except ValueError:
+                    print('\n(Valor Inválido!)')
+                    time.sleep(2)
+                    return
+                
+                if (qtd == 0 or qtd < 0 or (item_encontrado.quant - qtd) < 0):
+                    print('\n(Valor Inválido!)')
+                    time.sleep(2)
+                    return
+                
+                elif (item_encontrado.quant - qtd) == 0:
+                    self.lista_carrinho.remove(item_encontrado)
+                    print(f"\n| O item '{item.nome}' foi removido do carrinho.")
+                    time.sleep(2.5)
+                
+                elif (item_encontrado.quant - qtd) > 0:
+                    item_encontrado.quant -= qtd
+                    print(f"\n| {qtd} '{item.nome}' removido do carrinho.")
+                    time.sleep(2.5)
+                    
             else:
-                print(f"\n| O item '{nome}' não foi encontrado no carrinho.")
+                print("\n| O item não foi encontrado no carrinho.")
                 time.sleep(3)
                 
     def limpar(self) -> None:
@@ -230,13 +257,14 @@ class Carrinho:
                 
                 # Restrições da entrada
                 finalizar = input('\n\nDeseja finalizar o seu pedido? (s/n):\t')
-                if finalizar == 's':
+                finalizar_limpo = limpar_texto(finalizar)
+                if finalizar_limpo == 's':
                         limpar_tela()
                         print('\n| Pedido enviado!')
                         time.sleep(3)
                         self.finalizar_carrinho(cliente)
                         return True
-                elif finalizar == 'n':
+                elif finalizar_limpo == 'n':
                         limpar_tela()
                         print("\n| Você pode revisar seu pedido!")
                         time.sleep(3)

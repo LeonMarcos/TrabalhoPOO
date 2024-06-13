@@ -4,7 +4,7 @@ from Cliente import Cliente
 from Estabelecimento import Estabelecimento
 from Sistema import Sistema
 from Pedido import Pedido
-from Utilitarios import limpar_tela
+from Utilitarios import limpar_tela, limpar_texto
 
 
 
@@ -97,8 +97,8 @@ if __name__ == "__main__":
             limpar_tela()
             print("-----------------  UFMGFood  -----------------\n\n")
             print(f"| Olá, {cliente.nome}!\n")
-            print('1 - Início')
-            print('2 - Busca')
+            print('1 - Estabelecimentos')
+            print('2 - Produtos')
             print('3 - Pedidos')
             print('4 - Perfil')
             print('0 - Logout')
@@ -133,7 +133,6 @@ if __name__ == "__main__":
                 print(f"| CPF: {cliente.cpf_cnpj}")
                 input('\nPressione ENTER para voltar\n')
                 
-            
             sair = None
             if opcao == '0':
                 sair = input('\nTem certeza que deseja desconectar? \t(s/n)\n')
@@ -178,19 +177,29 @@ if __name__ == "__main__":
                 while pg != '0':
                     limpar_tela()
                     estab_classe.exibe_cardapio(estabelecimento)
-                    print('\n1 - Cadastram Novo Item')
-                    print('2 - Alterar Item')
-                    print('3 - Remover Item')
-                    print('0 - Sair')
+                    print('\n1 - Cadastrar Novo Item.')
+                    print('2 - Alterar Item.')
+                    print('3 - Remover Item.')
+                    print('0 - Voltar.')
                     pg = input('\nDigite a opção desejada:\t')
+                    
                     if pg == '1':
                         estab_classe.cadastra_item(estabelecimento)
+                        
+                    elif pg == '2':
+                        if estab_classe.altera_item_cardapio():
+                            continue
+                        
+                    elif pg == '3':
+                        if estab_classe.remove_item_cardapio():
+                            continue
                     
-                    if pg == '0':
+                    elif pg == '0':
                         break
             limpar_tela()
             if opcao == '4':
-                while True:
+                a=1
+                while a:
                     exb_dados = None
                     limpar_tela()
                     print("-----------------  Seus Dados  -----------------\n\n")
@@ -199,13 +208,21 @@ if __name__ == "__main__":
                     print(f"| Telefone: {estabelecimento.telefone}")
                     print(f"| Email: {estabelecimento.email}")
                     print(f"| CNPJ: {estabelecimento.cpf_cnpj}")
-                    exb_dados =  input('\nPressione ENTER para voltar.\n')
                     
-                    if exb_dados == '1':
-                        pass
-
-                    if exb_dados == '0':
-                        break
+                    exb_dados = input('\nDeseja alterar seus dados? (s/n):\t')
+                    exb_dados_limpo = limpar_texto(exb_dados)
+                    
+                    if (exb_dados_limpo != 's' and exb_dados_limpo != 'n'):
+                        print("\n(Entrada Inválida!)")
+                        time.sleep(2)
+                        continue                   
+                
+                    elif exb_dados_limpo == 's':
+                        estab_classe.atualiza_Usuario()
+                        
+                    elif exb_dados_limpo == 'n':
+                        a = 0
+                        
 
             
             sair = None
