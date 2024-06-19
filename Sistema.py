@@ -100,26 +100,22 @@ class Sistema:
     
     # método que cria um cadastro para cliente   
     def cria_cadastro_cliente(self, cliente: Type[Cliente]) -> None:
-        cliente = cliente
-        cliente_existente = None
-        cliente_existente = self.__verifica_login_usuario(cliente)
-        
-        if cliente_existente == False:
-            comando = """ INSERT INTO Usuarios(nome, endereco, telefone, email, cpf_cnpj, senha, tipo)
-            VALUES
-              (?, ?, ?, ?, ?, ?, ?)"""
-            cursor.execute(comando, cliente._nome, cliente._endereco, cliente._telefone, cliente._email, cliente._cpf_cnpj, cliente._senha, cliente.tipo )
-            cursor.commit()
-            consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
-            cursor.execute(consulta) 
-            tabela = cursor.fetchall()
-            self.__lista_de_clientes  = []
-            for busca in tabela:
-             self.__lista_de_clientes .append(busca)
+ 
+        comando = """ INSERT INTO Usuarios(nome, endereco, telefone, email, cpf_cnpj, senha, tipo)
+        VALUES
+          (?, ?, ?, ?, ?, ?, ?)"""
+        cursor.execute(comando, cliente._nome, cliente._endereco, cliente._telefone, cliente._email, cliente._cpf_cnpj, cliente._senha, cliente.tipo )
+        cursor.commit()
+        consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
+        cursor.execute(consulta) 
+        tabela = cursor.fetchall()
+        self.__lista_de_clientes  = []
+        for busca in tabela:
+         self.__lista_de_clientes .append(busca)
 
-            print("\n| O cadastro foi realizado com sucesso!")
-            time.sleep(3)
-            limpar_tela() 
+        print("\n| O cadastro foi realizado com sucesso!")
+        time.sleep(3)
+        limpar_tela() 
             
             
     # método que verifica se o estabelecimento existe na lista de estabelecimento
@@ -159,28 +155,25 @@ class Sistema:
     
     # método que cria um cadastro para estabelecimento   
     def cria_cadastro_estabelecimento(self, estabelecimento: Type[Estabelecimento]) -> None:
-        estabelecimento = estabelecimento
-        estabelecimento_existente = None
-        estabelecimento_existente = self.__verifica_login_estabelecimento(estabelecimento)
-        if estabelecimento_existente == False:
-            comando = """ INSERT INTO Usuarios(nome, endereco, telefone, email, cpf_cnpj, senha, tipo)
-            VALUES
-              (?, ?, ?, ?, ?, ?, ?)"""
-            cursor.execute(comando, estabelecimento._nome, estabelecimento._endereco, estabelecimento._telefone, estabelecimento._email, estabelecimento._cpf_cnpj, estabelecimento._senha, estabelecimento.tipo )
-            cursor.commit()
-            consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
-            cursor.execute(consulta) 
-            tabela = cursor.fetchall()
-            self.__lista_de_estabelecimentos  = []
-            for busca in tabela:
-                self.__lista_de_estabelecimentos.append(busca)
-            print("\n|O cadastro foi realizado com sucesso!")
-            time.sleep(3)
-            limpar_tela()
+
+        comando = """ INSERT INTO Usuarios(nome, endereco, telefone, email, cpf_cnpj, senha, tipo)
+        VALUES
+          (?, ?, ?, ?, ?, ?, ?)"""
+        cursor.execute(comando, estabelecimento._nome, estabelecimento._endereco, estabelecimento._telefone, estabelecimento._email, estabelecimento._cpf_cnpj, estabelecimento._senha, estabelecimento.tipo )
+        cursor.commit()
+        consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
+        cursor.execute(consulta) 
+        tabela = cursor.fetchall()
+        self.__lista_de_estabelecimentos  = []
+        for busca in tabela:
+            self.__lista_de_estabelecimentos.append(busca)
+        print("\n|O cadastro foi realizado com sucesso!")
+        time.sleep(3)
+        limpar_tela()
         
             
     # Método que exibe uma lista de estabelecimentos cadastrados e associa cada estabelecimento a um número inteiro diferente
-    def exibe_estabelecimentos(self, cliente) ->"Estabelecimento":
+    def exibe_estabelecimentos(self, cliente) ->bool:
         cliente = cliente
         carrinho_aux = Carrinho()
         
@@ -224,30 +217,3 @@ class Sistema:
 
                 if navegar == 0:
                     return False
-        
-            
-            
-        
-            
-if __name__ == "__main__":
-    
-        sistemaum = Sistema()    
-        estabelecimentoum = Estabelecimento()
-        
-        estabelecimentoum.cria_Usuario()
-        print("\n")
-        print(estabelecimentoum.get_nome())
-        print(estabelecimentoum.get_endereco())
-        print(estabelecimentoum.get_telefone())
-        print(estabelecimentoum.get_email())
-        print(estabelecimentoum.get_cpf_cnpj())
-        print(estabelecimentoum.get_senha())
-        
-        sistemaum.cria_cadastro_estabelecimento(estabelecimentoum) 
-        
-        estabelecimentodois = Estabelecimento()
-        estabelecimentodois.cria_Usuario()
-        sistemaum.cria_cadastro_estabelecimento(estabelecimentodois)
-        
-        sistemaum.exibe_estabelecimentos()
-        
