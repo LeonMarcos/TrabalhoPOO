@@ -1,23 +1,18 @@
-
-
-
 ####################### BANCO DE DADOS ######################
 
 from Conex_SQL import connection
-
 
 cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis dentro do sql
 
 #############################################################
 
+import time
 from Carrinho import Carrinho
 from Usuario import Usuario
 from Cliente import Cliente
 from Estabelecimento import Estabelecimento
 from typing import Type
-import time
 from Utilitarios import limpar_tela
-
 
 dados_usuario = None
 
@@ -27,28 +22,25 @@ class Sistema:
         self.__lista_de_usuarios = []
         self.__lista_de_estabelecimentos = []
 
-    def salva_dados_usuario(self, usuario):  
+    def salva_dados_usuario(self, usuario:Type[Usuario]) -> None:
         self.dados_usuario = usuario
          
-    
-    def retorna_dados_usuario(self):
+    def retorna_dados_usuario(self) -> Usuario:
          return self.dados_usuario
-
-        
-        
+           
     # método que verifica se o usuário existe na lista de usuários
-    def __verifica_login_usuario(self, usuario: Type[Usuario]) -> bool:
+    def __verifica_login_usuario(self, usuario:Type[Usuario]) -> bool:
         usuario_login = usuario
-        consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
-        cursor.execute(consulta) 
+        consulta = """ SELECT * FROM Usuarios WHERE tipo = ?; """ #consulta o banco de dados
+        cursor.execute(consulta, usuario.tipo) 
         tabela = cursor.fetchall()
         self.__lista_de_usuarios  = []
         for busca in tabela:
             self.__lista_de_usuarios.append(busca)
         
         if usuario_login.get_email() == None and usuario_login.get_senha() == None:
-           login_email = input("\nDigite seu e-mail: ")
-           login_senha = input("Digite sua senha: ")
+           login_email = input("\nDigite seu e-mail:\t")
+           login_senha = input("Digite sua senha:\t")
            
            for usuario_banco in self.__lista_de_usuarios:
                if usuario_banco.email == login_email and \
@@ -72,16 +64,14 @@ class Sistema:
                     return True
                      
         return False
-     
     
     # método que retorna o usuário
-    def login_usuario(self) -> bool:
+    def login_usuario(self, usuario:Type[Usuario]) -> bool:
         
         limpar_tela()
-        usuario_classe = Usuario()      
-        print("-------------- Login --------------\n")
+        print("---------------- Login ----------------\n")
         login = None 
-        login = self.__verifica_login_usuario(usuario_classe)
+        login = self.__verifica_login_usuario(usuario)
         print('\n---------------------------------------')
         
         if login == True:
@@ -94,9 +84,7 @@ class Sistema:
             time.sleep(3)
             limpar_tela()
 
-        return login
-    
-        
+        return login        
     
     # método que cria um cadastro para cliente   
     def cria_cadastro_cliente(self, cliente: Type[Cliente]) -> None:
@@ -117,41 +105,6 @@ class Sistema:
         time.sleep(3)
         limpar_tela() 
             
-            
-    # método que verifica se o estabelecimento existe na lista de estabelecimento
-    def __verifica_login_estabelecimento(self, estabelecimento: Type[Estabelecimento]) -> bool:
-        estabelecimento_login = estabelecimento
-        consulta = """ SELECT * FROM Usuarios; """ #consulta o banco de dados
-        cursor.execute(consulta) 
-        tabela = cursor.fetchall()
-        self.__lista_de_estabelecimentos  = []
-        for busca in tabela:
-            self.__lista_de_estabelecimentos.append(busca)
-        if estabelecimento_login.get_email() == None and estabelecimento_login.get_senha() == None:
-           login_email = input("\nDigite seu e-mail: ")
-           login_senha = input("Digite sua senha: ")
-           for estabelecimento_banco in self.__lista_de_estabelecimentos:
-               if estabelecimento_banco.email == login_email and \
-                   estabelecimento_banco.senha == login_senha:
-                       return True    
-        else:    
-            for estabelecimento_banco in self.__lista_de_estabelecimentos:
-                if estabelecimento_banco.nome == estabelecimento_login._nome:
-                        print('| Nome já cadastrado por outro estabelecimento!')
-                        time.sleep(3)
-                        limpar_tela()
-                        return True 
-                if estabelecimento_banco.email == estabelecimento_login._email:
-                     print('| Email já cadastrado por outro usuário!')
-                     time.sleep(3)
-                     limpar_tela() 
-                     return True 
-                if estabelecimento_banco.cpf_cnpj == estabelecimento_login._cpf_cnpj: #alterei para email ou cpf/cnpj iguais
-                    print('| CNPJ já cadastrado por outro usuário!')
-                    time.sleep(3)
-                    limpar_tela() 
-                    return True
-        return False       
     
     # método que cria um cadastro para estabelecimento   
     def cria_cadastro_estabelecimento(self, estabelecimento: Type[Estabelecimento]) -> None:
@@ -173,8 +126,7 @@ class Sistema:
         
             
     # Método que exibe uma lista de estabelecimentos cadastrados e associa cada estabelecimento a um número inteiro diferente
-    def exibe_estabelecimentos(self, cliente) ->bool:
-        cliente = cliente
+    def exibe_estabelecimentos(self, cliente:Type[Cliente]) ->bool:
         carrinho_aux = Carrinho()
         
         consulta = """ SELECT * FROM Usuarios
@@ -187,33 +139,43 @@ class Sistema:
         for busca in tabela:
             self.__lista_de_estabelecimentos.append(busca)
 
-        # self.__lista_de_estabelecimentos = [] # tirar comentário para simular nenhum estabelecimento cadastrado
         if not self.__lista_de_estabelecimentos:
             print("\n| Não existem estabelecimentos cadastrados no aplicativo.")
             limpar_tela()
         else:
             while True:
+                lista_numeros = []
                 limpar_tela()
-                print("-----------------  Lista de Estabelecimentos  -----------------\n")
+                print("\n-----------------  Lista de Estabelecimentos  -----------------\n\n")
                 numero = 0
                 
                 for estab in self.__lista_de_estabelecimentos:
                     numero = numero + 1
                     print(estab.id,"–", estab.nome)
+                    lista_numeros.append(estab.id)
                     print("-"*50)
-                print("0 – Voltar") 
+                print("\n0 – Voltar.") 
                 
                 navegar = 0
-                navegar = int(input('\nDigite a opção desejada:\t'))
+                try:
+                    navegar = int(input('\n\nDigite a opção desejada:\t'))
+                except ValueError:
+                    print("\n(Entrada Inválida!)")
+                    time.sleep(2)
+                    continue
                 
-                for proc in self.__lista_de_estabelecimentos:
-                    if proc.id == navegar:
-                            limpar_tela()
-                            car = carrinho_aux.menu(proc, cliente)
-                            if car == False: # nessa condição o carrinho não está finalizado e mantém o menu lista de estabelecimentos aberto
-                                pass
-                            if car == True: # quando finalizar o carrinho, será possível voltar ao menu inicial
-                                return False
+                if (navegar == 0 or navegar in lista_numeros):
+                    for proc in self.__lista_de_estabelecimentos:
+                        if proc.id == navegar:
+                                limpar_tela()
+                                car = carrinho_aux.menu(proc, cliente)
+                                if car == False: # nessa condição o carrinho não está finalizado e mantém o menu lista de estabelecimentos aberto
+                                    pass
+                                if car == True: # quando finalizar o carrinho, será possível voltar ao menu inicial
+                                    return False
 
-                if navegar == 0:
-                    return False
+                    if navegar == 0:
+                        return False
+                else:
+                    print("\n(Entrada Inválida!)")
+                    time.sleep(2)

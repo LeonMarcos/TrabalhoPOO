@@ -7,7 +7,6 @@ cursor = connection.cursor() #utiliza-se o cursor para apontar para as variaveis
 #############################################################
 
 import time
-from Usuario import Usuario
 from Cliente import Cliente
 from Estabelecimento import Estabelecimento
 from Sistema import Sistema
@@ -19,17 +18,13 @@ if __name__ == "__main__":
 
     #Classes
     sistema1 = Sistema()
-    usuario1 = Usuario()
-    # cliente1 = Cliente()
-    # estabelecimento1 = Estabelecimento()
     
     def menu_inicial()->None:
 
         #Variáveis auxiliares
         conta_existe = None
         opcao = None
-        cliente1 = Cliente()
-        estabelecimento1 = Estabelecimento()
+        
         
         while True:
             limpar_tela()
@@ -42,23 +37,37 @@ if __name__ == "__main__":
             conta_existe = input("\n\nDigite a opção desejada:\t")
             
             if conta_existe == '1':
+                limpar_tela()
+                print("-----------------  Login  -----------------\n\n")
+                print("Fazer login como:")
+                print('\n1 - Cliente')
+                print('2 - Estabelecimento')
+                print('\n0 - Voltar.')
                 
-                login = sistema1.login_usuario()
-
-                if login == True:
-                        usuario1 = sistema1.retorna_dados_usuario()
-                        
-                        if usuario1.tipo == 'Cliente':
-                            limpar_tela()
-                            cliente1 = usuario1
-                            menu_app_cliente(cliente1)
-
-                        if usuario1.tipo == 'Estabelecimento':
-                            limpar_tela()
-                            estabelecimento1 = usuario1
-                            menu_app_estabelecimento(estabelecimento1)
-                        
+                opcao_login = input("\n\nDigite a opção desejada:\t")
                 
+                cliente1 = Cliente()
+                estabelecimento1 = Estabelecimento()
+                
+                if opcao_login == '0':
+                    continue
+                
+                # Login de usuário
+                login = sistema1.login_usuario(cliente1 if opcao_login == '1' else estabelecimento1)
+                            
+                if login:
+                    usuario = sistema1.retorna_dados_usuario()
+            
+                    if usuario.tipo == 'Cliente':
+                        limpar_tela()
+                        cliente1 = usuario
+                        menu_app_cliente(cliente1)
+            
+                    else:
+                        limpar_tela()
+                        estabelecimento1 = usuario
+                        menu_app_estabelecimento(estabelecimento1)
+                        
 
             if conta_existe == '2':
 

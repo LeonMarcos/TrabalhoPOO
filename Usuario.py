@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class Usuario():
+class Usuario(ABC):
     # Métodos getters
     @abstractmethod
     def get_nome(self) -> str:

@@ -334,7 +334,7 @@ class Estabelecimento(Usuario):
                 time.sleep(2)
 
     # Método que exibe os itens cadastrados no cardápio.
-    def exibe_cardapio(self, estabelecimento) -> bool: #PROBLEMA DE COLOCAR O TIPO DA VARIÁVEL ESTABELECIMENTO
+    def exibe_cardapio(self, estabelecimento) -> bool:
         while True:
             limpar_tela()
             print('*'*31, " "*8,
@@ -363,7 +363,7 @@ class Estabelecimento(Usuario):
             return True
         
     # Método que cadastra item no cardápio.
-    def cadastra_item(self, estabelecimento) -> None: #PROBLEMA DE COLOCAR O TIPO DA VARIÁVEL ESTABELECIMENTO
+    def cadastra_item(self, estabelecimento) -> None:
         
         item = Item()
         # Os itens só podem ser criados dentro dessa função.
