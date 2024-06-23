@@ -19,7 +19,7 @@ class Item:
         self.preco = None
         
     #Método que cria um item.
-    def cria_item(self, estabelecimento) -> bool: #PROBLEMA DE COLOCAR O TIPO DA VARIÁVEL ESTABELECIMENTO
+    def cria_item(self, estabelecimento) -> bool:
         
         while True:
             limpar_tela()

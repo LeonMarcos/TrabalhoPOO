@@ -50,20 +50,20 @@ class Cliente(Usuario):
 
     def cria_Usuario(self) -> None:
         limpar_tela()
-        print(f"\n---------  Cadastrar {self.__class__.__name__}  ---------\n")
+        print(f"\n---------  Cadastrar {self.__class__.__name__}  ---------\n\n")
 
         # Tratamento de exceção para o nome
         while True:
             try:
-                nome = str(input("\nNome: "))
+                nome = str(input("Nome: "))
                 if len(nome.split()) >= 2 and re.fullmatch(self.padrao_nome, nome):
                     self._nome = nome
                     break
                 else:
                     print(
-                        "Nome inválido. Por favor, digite um nome com no mínimo nome e sobrenome, contendo apenas letras e espaços.")
+                        "Nome inválido. Por favor, digite um nome com no mínimo nome e sobrenome, contendo apenas letras e espaços.\n")
             except:
-                print("Nome inválido. Por favor, digite novamente.")
+                print("Nome inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para o endereço
         while True:
@@ -71,7 +71,7 @@ class Cliente(Usuario):
                 self._endereco = str(input("Endereço: "))
                 break
             except:
-                print("Endereço inválido. Por favor, digite novamente.")
+                print("Endereço inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para o telefone
         while True:
@@ -82,9 +82,9 @@ class Cliente(Usuario):
                     break
                 else:
                     print(
-                        "Número de telefone inválido. Por favor, digite um número com 11 dígitos (DDD + número).")
+                        "Número de telefone inválido. Por favor, digite um número com 11 dígitos (DDD + número).\n")
             except:
-                print("Número de telefone inválido. Por favor, digite novamente.")
+                print("Número de telefone inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para o email
         while True:
@@ -93,9 +93,9 @@ class Cliente(Usuario):
                 if "@" in self._email:
                     break
                 else:
-                    print("E-mail inválido. O e-mail deve conter '@'.")
+                    print("E-mail inválido. O e-mail deve conter '@'.\n")
             except:
-                print("E-mail inválido. Por favor, digite novamente.")
+                print("E-mail inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para o cpf
         while True:
@@ -107,9 +107,9 @@ class Cliente(Usuario):
                         self._cpf_cnpj = int(cpf)
                         break
                     else:
-                        print("Número de CPF inválido. Por favor, digite novamente.")
+                        print("Número de CPF inválido. Por favor, digite novamente.\n")
             except:
-                print("Número de CPF inválido. Por favor, digite novamente.")
+                print("Número de CPF inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para a senha
         while True:
@@ -120,12 +120,14 @@ class Cliente(Usuario):
                     break
                 else:
                     print(
-                        "A senha deve ter pelo menos 6 dígitos. Por favor, digite novamente.")
+                        "A senha deve ter pelo menos 6 dígitos. Por favor, digite novamente.\n")
             except:
-                print("Senha inválida. Por favor, digite novamente.")
+                print("Senha inválida. Por favor, digite novamente.\n")
                 
         cursor.execute("SELECT MAX(id) FROM Usuarios")
         ultimo_id = cursor.fetchone()[0]
+        if ultimo_id is None:
+            ultimo_id = 0
         self.id = ultimo_id + 1
 
     # Método para atualizar usuário
@@ -203,7 +205,7 @@ class Cliente(Usuario):
                         update = self._telefone
                         
                         for cliente_banco in lista_usuarios:
-                            if cliente_banco.telefone == self._telefone: #alterei para email ou cpf/cnpj iguais
+                            if cliente_banco.telefone == self._telefone:
                                 print('\n| Telefone já cadastrado.')
                                 time.sleep(3)
                                 n_alterado = True

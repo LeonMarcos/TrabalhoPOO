@@ -45,7 +45,7 @@ class Sistema:
            for usuario_banco in self.__lista_de_usuarios:
                if usuario_banco.email == login_email and \
                    usuario_banco.senha == login_senha:
-                        self.salva_dados_usuario(usuario_banco) #tem que retornar os dados do cliente tbm e não só se o login foi aprovado
+                        self.salva_dados_usuario(usuario_banco)
                         return True
                            
         else:         
@@ -57,7 +57,7 @@ class Sistema:
                     limpar_tela()
                     return True 
                 
-                if usuario_banco.cpf_cnpj == usuario_login._cpf_cnpj: #alterei para email OU cpf/cnpj iguais
+                if usuario_banco.cpf_cnpj == usuario_login._cpf_cnpj:
                     print('| CPF já cadastrado por outro usuário!')
                     time.sleep(3)
                     limpar_tela()
@@ -65,7 +65,7 @@ class Sistema:
                      
         return False
     
-    # método que retorna o usuário
+    # método que retorna se o login foi efetuado
     def login_usuario(self, usuario:Type[Usuario]) -> bool:
         
         limpar_tela()
@@ -101,7 +101,7 @@ class Sistema:
         for busca in tabela:
          self.__lista_de_clientes .append(busca)
 
-        print("\n| O cadastro foi realizado com sucesso!")
+        print("\n\n| O cadastro foi realizado com sucesso!")
         time.sleep(3)
         limpar_tela() 
             
@@ -120,7 +120,7 @@ class Sistema:
         self.__lista_de_estabelecimentos  = []
         for busca in tabela:
             self.__lista_de_estabelecimentos.append(busca)
-        print("\n|O cadastro foi realizado com sucesso!")
+        print("\n\n| O cadastro foi realizado com sucesso!")
         time.sleep(3)
         limpar_tela()
         
@@ -140,13 +140,14 @@ class Sistema:
             self.__lista_de_estabelecimentos.append(busca)
 
         if not self.__lista_de_estabelecimentos:
-            print("\n| Não existem estabelecimentos cadastrados no aplicativo.")
+            print("| Não existem estabelecimentos cadastrados no aplicativo.")
+            input('\n\nPressione ENTER para voltar.\t')
             limpar_tela()
         else:
             while True:
                 lista_numeros = []
                 limpar_tela()
-                print("\n-----------------  Lista de Estabelecimentos  -----------------\n\n")
+                print("-----------------  Lista de Estabelecimentos  -----------------\n\n")
                 numero = 0
                 
                 for estab in self.__lista_de_estabelecimentos:

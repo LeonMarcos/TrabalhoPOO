@@ -30,7 +30,8 @@ class Carrinho:
             estab_aux = Estabelecimento()
             veri = estab_aux.exibe_cardapio(estabelecimento)
             if veri == False:
-                 return False
+                input('\nPressione ENTER para voltar.\t')
+                return False
             self.convert_lista(estabelecimento)
             
             print('\n1 - Adicionar Item ao Carrinho.')
@@ -221,7 +222,7 @@ class Carrinho:
             time.sleep(3)
             self.lista_carrinho = []
     
-    #Método que exibe as informações do carrinho, iten, número de itens, descrição de cada iten e valor total
+    #Método que exibe as informações do carrinho, item, número de itens, descrição de cada item e valor total
     def exibe_carrinho(self, cliente:Cliente) -> bool:
         
         a = 1

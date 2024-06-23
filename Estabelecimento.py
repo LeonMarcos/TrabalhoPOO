@@ -61,20 +61,20 @@ class Estabelecimento(Usuario):
             lista_usuarios.append(busca)
             
         limpar_tela()
-        print(f"\n---------  Cadastrar {self.__class__.__name__}  ---------\n")
+        print(f"\n---------  Cadastrar {self.__class__.__name__}  ---------\n\n")
 
         # Tratamento de exceção para o nome
         while True:
             try:
-                nome = str(input("\nNome: "))
+                nome = str(input("Nome: "))
                 if len(nome.split()) >= 1 and re.fullmatch(self.padrao_nome, nome):
                     self._nome = nome
                     break
                 else:
                     print(
-                        "Nome de estabelecimento inválido. Por favor, digite um nome contendo apenas letras e espaços.")
+                        "Nome de estabelecimento inválido. Por favor, digite um nome contendo apenas letras e espaços.\n")
             except:
-                print("Nome inválido. Por favor, digite novamente.")
+                print("Nome inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para o endereço
         while True:
@@ -82,7 +82,7 @@ class Estabelecimento(Usuario):
                 self._endereco = str(input("Endereço: "))
                 break
             except:
-                print("Endereço inválido. Por favor, digite novamente.")
+                print("Endereço inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para o telefone
         while True:
@@ -93,9 +93,9 @@ class Estabelecimento(Usuario):
                     break
                 else:
                     print(
-                        "Número de telefone inválido. Por favor, digite um número com 11 dígitos (DDD + número).")
+                        "Número de telefone inválido. Por favor, digite um número com 11 dígitos (DDD + número).\n")
             except:
-                print("Número de telefone inválido. Por favor, digite novamente.")
+                print("Número de telefone inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para o email
         while True:
@@ -104,9 +104,9 @@ class Estabelecimento(Usuario):
                 if "@" in self._email:
                     break
                 else:
-                    print("E-mail inválido. O e-mail deve conter '@'.")
+                    print("E-mail inválido. O e-mail deve conter '@'.\n")
             except:
-                print("E-mail inválido. Por favor, digite novamente.")
+                print("E-mail inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para o cnpj
         while True:
@@ -120,9 +120,9 @@ class Estabelecimento(Usuario):
                         self._cpf_cnpj = int(cnpj)
                         break
                     else:
-                        print("Número de CNPJ inválido. Por favor, digite novamente.")
+                        print("Número de CNPJ inválido. Por favor, digite novamente.\n")
             except:
-                print("Número de CNPJ inválido. Por favor, digite novamente.")
+                print("Número de CNPJ inválido. Por favor, digite novamente.\n")
 
         # Tratamento de exceção para a senha
         while True:
@@ -133,12 +133,14 @@ class Estabelecimento(Usuario):
                     break
                 else:
                     print(
-                        "A senha deve ter pelo menos 6 dígitos. Por favor, digite novamente.")
+                        "A senha deve ter pelo menos 6 dígitos. Por favor, digite novamente.\n")
             except:
-                print("Senha inválida. Por favor, digite novamente.")
+                print("Senha inválida. Por favor, digite novamente.\n")
         
         cursor.execute("SELECT MAX(id) FROM Usuarios")
         ultimo_id = cursor.fetchone()[0]
+        if ultimo_id is None:
+            ultimo_id = 0
         self.id = ultimo_id + 1
 
         limpar_tela()
@@ -216,7 +218,7 @@ class Estabelecimento(Usuario):
                     
                     for estabelecimento_banco in lista_estabelecimentos:
                         
-                        if limpar_texto(estabelecimento_banco.endereco) == limpar_texto(self._endereco): #alterei para email ou cpf/cnpj iguais
+                        if limpar_texto(estabelecimento_banco.endereco) == limpar_texto(self._endereco):
                             print('\n| Endereço já cadastrado.')
                             time.sleep(3)
                             n_alterado = True
@@ -232,7 +234,7 @@ class Estabelecimento(Usuario):
                         update = self._telefone
                         
                         for estabelecimento_banco in lista_usuarios:
-                            if estabelecimento_banco.telefone == self._telefone: #alterei para email ou cpf/cnpj iguais
+                            if estabelecimento_banco.telefone == self._telefone:
                                 print('\n| Telefone já cadastrado.')
                                 time.sleep(3)
                                 n_alterado = True
@@ -346,18 +348,15 @@ class Estabelecimento(Usuario):
             for busca in tabela:
                 self.__cardapio.append(busca)
             if not self.__cardapio:
-                print("| O cardápio está vazio.")
-                input('\n\nPressione ENTER para voltar.\t')
+                print("| O cardápio está vazio.\n")
                 return False
 
             numero = 0
             print(
                 "N° |           Nome            |            Descrição            |            Preço  ")
             for item_cardapio in self.__cardapio:
-                # sys.stdout.flush()
                 print("-"*100)
                 numero = numero + 1
-                # Lista de caracteres a serem impressos
                 print(numero, f"   {item_cardapio.nome}".ljust(30), f"{item_cardapio.descricao}".ljust(33), f"R${item_cardapio.preco:.2f}")
             print("-"*100)
             return True

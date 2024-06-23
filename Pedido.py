@@ -31,6 +31,8 @@ class Pedido:
             self.status = 'Pendente'
             cursor.execute("SELECT MAX(id) FROM Pedidos")
             ultimo_id = cursor.fetchone()[0]
+            if ultimo_id is None:
+                ultimo_id = 0
             self.id = ultimo_id + 1
             
             for p in self.lista:
@@ -73,14 +75,13 @@ class Pedido:
                 for p in self.lista_pedido:
                     self.avaliacao = p.avaliacao
                     self.endereco = p.endereco
-                    #p.subtotal = p.quant_item * p.preco
                     print(f"| {p.nome_item}".ljust(20), f"R${p.preco:0.2f}".ljust(15),f"x {p.quant_item}".ljust(10), f"R${p.subtotal:0.2f}")
                     
                     self.total += p.subtotal 
                     
                 print("\n","-"*60)    
                 print(f"\n| Valor total do pedido: R${self.total:0.2f}")
-                print(f"\n| Endereço de entrega: {self.endereco}") #### DESCOBRIR O PQ NÃO FUNCIONA COM pedido.endereco
+                print(f"\n| Endereço de entrega: {self.endereco}")
                 
                 if usuario.tipo == 'Cliente' and self.avaliacao == None and pedido.status_pedido == 'Concluído':
                     
