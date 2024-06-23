@@ -1,4 +1,8 @@
 # TrabalhoPOO
 
-Diagrama UML:
-https://app.diagrams.net/#G11SF9hC7FxwqFSOPCntqZ2eYtITEYkfPU#%7B%22pageId%22%3A%22Ge6YaEeNG3dG8RkF--He%22%7D
+Requisitos:
+
+- Instalar o programa SQL Query, para o funcionamento do banco de dados;
+- Instalar algum editor de códio-fone, para executar o programa (arquivo: pg_main);
+- Instalar as bibliotecas necessárias de Phtyton;
+- Baixar o arquivo enviado no repositório no SQL (Dados do banco de dados).
